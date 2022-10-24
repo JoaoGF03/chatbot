@@ -1,0 +1,32 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:db.sqlite"
+}
+
+model Flow {
+  id        String @id @default(cuid())
+  message   String
+  name      String
+  createdBy String
+
+  buttons Button[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([name, createdBy], name: "name_createdBy")
+}
+
+model Button {
+  id   String @id @default(cuid())
+  body String
+
+  flows Flow[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

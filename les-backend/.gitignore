@@ -1,0 +1,14 @@
+/node_modules
+/yarn.lock
+/package-lock.json
+/dist
+
+.vscode
+.env
+
+tmp/*
+!tmp/.gitkeep
+
+tmp/avatar/*
+!tmp/avatar
+!tmp/avatar/.gitkeep

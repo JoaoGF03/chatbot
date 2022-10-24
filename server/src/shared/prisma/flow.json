@@ -1,0 +1,92 @@
+[
+  {
+    "name": "Welcome",
+    "message": "Seja bem vindo, {name}! \n \nVocê está no nosso sistema de atendimento virtual. \n \nEm que posso ajudar?",
+    "buttons": [
+      {
+        "id": "portfolio",
+        "body": "Ver portfólio"
+      },
+      {
+        "id": "contact",
+        "body": "Quero falar com um consultor"
+      },
+      {
+        "id": "info",
+        "body": "Quero saber mais sobre a empresa"
+      }
+    ]
+  },
+  {
+    "name": "Contact",
+    "message": "Já deixe aqui sua mensagem que um consultor entrará em contato com você. \nObrigado!"
+  },
+  {
+    "name": "Budget",
+    "message": "Deixe a ideia do seu projeto com a gente que um consultor entrará em contato com você. \nObrigado!"
+  },
+  {
+    "name": "Info",
+    "message": "Somos uma empresa de arquitetura e design de interiores. \n \nNossa missão é transformar sonhos em realidade. \n \nEm que posso ajudar?",
+    "buttons": [
+      {
+        "id": "residential",
+        "body": "Projeto residencial"
+      },
+      {
+        "id": "commercial",
+        "body": "Projeto comercial"
+      },
+      {
+        "id": "renovation",
+        "body": "Projeto de reforma"
+      }
+    ]
+  },
+  {
+    "name": "Residential",
+    "message": "Fazemos projetos arquitetônicos e de interiores para reformas ou construções. \n\nTodos os projetos tem inicio a partir das respostas dadas pelo cliente no questionário que chamamos de briefing. É ele quem definirá suas necessidades, desejos, orçamento e estilo arquitetônico condizente com sua personalidade.\n\nDentre os estilos, destacamos o minimalismo, clássico, moderno, industrial, vintage, tropical, boho, escandinavo, rústico, navy, americano e oriental.\n\nNo projeto de arquitetura aplicaremos esse estilo através da definição de espaços, volumes, cores e revestimentos.\n\nNo projeto de interiores o foco é na decoração, através da escolha de mobiliários, iluminação, cores e texturas. \n\nVocê receberá o projeto com todas as informações necessárias para dar início à sua obra. \n\nSendo elas: Plantas baixas,\n3D renderizado, moodboard, elevações, projetos executivos, memorial descritivo e detalhamentos.\nConstrua sua casa ou reforme um ambiente para que ele demonstre sua personalidade e atenda suas necessidades.",
+    "buttons": [
+      {
+        "id": "budget",
+        "body": "Quero um orçamento"
+      },
+      {
+        "id": "contact",
+        "body": "Quero falar com um consultor"
+      }
+    ]
+  },
+  {
+    "name": "Commercial",
+    "message": "Fazemos projetos comerciais, institucionais e corporativos como lojas, escritórios, salões de beleza, estúdios de tatuagem, consultórios, franquias em geral e outros.\n\nA partir e um questionário respondido pelo cliente ainda no início do processo, que definirá o estilo de decoração, orçamento, necessidades e desejos, a elaboração desses projetos é feita afim de fortalecer o conceito da marca e fazer com que o espaço projetado transmita sua essência. Outros fatores fundamentais na elaboração do projeto são a eficiência térmica e acústica, fundamentais em ambientes comerciais e corporativos.\n\nAlém de atender às necessidades apontadas previamente pelo cliente e pela identidade visual definida, o projeto será pensado de maneira que respeite os parâmetros legais e atinja o maior potencial ergonômico possível, aumentando a produtividade e qualidade de vida dos usuários do espaço.\n\nJuntos, vamos pensar em tudo que você precisa pra deixar a decoração condizente com a sua marca e o espaço bem dividido, organizado e aconchegante.",
+    "buttons": [
+      {
+        "id": "budget",
+        "body": "Quero um orçamento"
+      },
+      {
+        "id": "contact",
+        "body": "Quero falar com um consultor"
+      }
+    ]
+  },
+  {
+    "name": "Renovation",
+    "message": "Fazemos projetos de reforma para apartamentos, casas, lojas, escritórios, salões de beleza, estúdios de tatuagem, consultórios, franquias em geral e outros.\n\nA partir e um questionário respondido pelo cliente ainda no início do processo, que definirá o estilo de decoração, orçamento, necessidades e desejos, a elaboração desses projetos é feita afim de fortalecer o conceito da marca e fazer com que o espaço projetado transmita sua essência. Outros fatores fundamentais na elaboração do projeto são a eficiência térmica e acústica, fundamentais em ambientes comerciais e corporativos.\n\nAlém de atender às necessidades apontadas previamente pelo cliente e pela identidade visual definida, o projeto será pensado de maneira que respeite os parâmetros legais e atinja o maior potencial ergonômico possível, aumentando a produtividade e qualidade de vida dos usuários do espaço.\n\nJuntos, vamos pensar em tudo que você precisa pra deixar a decoração condizente com a sua marca e o espaço bem dividido, organizado e aconchegante.",
+    "buttons": [
+      {
+        "id": "budget",
+        "body": "Quero um orçamento"
+      },
+      {
+        "id": "contact",
+        "body": "Quero falar com um consultor"
+      }
+    ]
+  },
+  {
+    "name": "Portfolio",
+    "message": "{link} \n \n Aqui você pode ver alguns dos nossos projetos."
+  }
+]
