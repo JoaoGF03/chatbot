@@ -16,7 +16,7 @@ export const ChatbotContext = createContext<IChatbotContext>(
   {} as IChatbotContext,
 );
 
-export function ChatbotContextProvider({
+export function ChatbotProvider({
   children,
 }: {
   children: React.ReactNode;

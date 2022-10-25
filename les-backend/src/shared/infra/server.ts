@@ -1,7 +1,7 @@
-import { app } from './app';
+import { httpServer } from './app';
+import './websocket';
 
-app.listen(process.env.PORT || 3333, () => {
-  console.log(
-    `🚀 ~ file: server.ts ~ port ${process.env.PORT ? process.env.PORT : 3333}`,
-  );
+httpServer.listen(3333, () => {
+  // eslint-disable-next-line
+  console.log('server is running on port 3333 🎉');
 });

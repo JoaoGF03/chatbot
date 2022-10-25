@@ -1,19 +1,20 @@
-import axios from 'axios'
 import * as Dialog from '@radix-ui/react-dialog';
 import * as ToggleGroup from '@radix-ui/react-toggle-group'
 
 import Input from './Form/Input';
 import { FormEvent, useEffect, useState } from 'react';
 import TextArea from './Form/TextArea';
+import { setupAPIClient } from '../service/api';
 
 export function CreateFlowModal() {
   const [games, setGames] = useState([])
   const [apiButtons, setApiButtons] = useState<{ id: string, name: string }[]>([])
   const [buttons, setButtons] = useState<string[]>([])
+  const api = setupAPIClient()
 
   useEffect(() => {
-    axios('http://localhost:3333/buttons')
-      .then(response => setApiButtons(response.data)).then(() => console.log('hi'))
+    api.get('/buttons')
+      .then(response => setApiButtons(response.data))
   }, [])
 
   async function handleCreateAd(event: FormEvent) {
@@ -28,19 +29,13 @@ export function CreateFlowModal() {
     }
 
     try {
-      // await axios.post(`http://localhost:3333/games/${data.game}/ads`, {
-      //   name: data.name,
-      //   yearsPlaying: Number(data.yearsPlaying),
-      //   discord: data.discord,
-      //   hourStart: data.hourStart,
-      //   hourEnd: data.hourEnd,
-      //   weekDays: weekDays.map(Number),
-      //   useVoiceChannel
-      // })
-
-      alert('Anúncio criado com sucesso!')
+      api.post('/flows', {
+        name: data.name,
+        message: data.message,
+        buttons: buttons.map(button => ({ id: button }))
+      })
     } catch (error) {
-      alert('Erro ao criar anúncio!')
+      console.log(error)
     }
   }
 
@@ -61,8 +56,8 @@ export function CreateFlowModal() {
           </div>
 
           <div className='flex flex-col gap-2'>
-            <label htmlFor="name">Conteúdo</label>
-            <TextArea name='name' id='name' placeholder='Digite sua mensagem' />
+            <label htmlFor="message">Conteúdo</label>
+            <TextArea name='message' id='message' placeholder='Digite sua mensagem' />
           </div>
 
           <div className='flex gap-6'>
@@ -80,39 +75,15 @@ export function CreateFlowModal() {
               >
                 {apiButtons.map((button) => (
                   <ToggleGroup.Item
+                    key={button.id}
                     value={button.id}
-                    className={`◊w-auto px-2 h-8 rounded ${buttons.includes(button.id) ? 'bg-violet-500' : 'bg-zinc-900'}`}
+                    className={`w-auto px-2 h-8 rounded ${buttons.includes(button.id) ? 'bg-violet-500' : 'bg-zinc-900'}`}
                     title="faq">
                     {button.name}
                   </ToggleGroup.Item>
                 ))}
-                {/* <ToggleGroup.Item
-                  value="0"
-                  className={`◊w-auto px-2 h-8 rounded ${buttons.includes('0') ? 'bg-violet-500' : 'bg-zinc-900'}`}
-                  title="faq">
-                  FAQ
-                </ToggleGroup.Item>
-                <ToggleGroup.Item
-                  value="1"
-                  className={`◊w-auto px-2 h-8 rounded ${buttons.includes('1') ? 'bg-violet-500' : 'bg-zinc-900'}`}
-                  title="ajuda">
-                  Ajuda
-                </ToggleGroup.Item>
-                <ToggleGroup.Item
-                  value="2"
-                  className={`◊w-auto px-2 h-8 rounded ${buttons.includes('2') ? 'bg-violet-500' : 'bg-zinc-900'}`}
-                  title="contato">
-                  Contato
-                </ToggleGroup.Item>
-                <ToggleGroup.Item
-                  value="3"
-                  className={`◊w-auto px-2 h-8 rounded ${buttons.includes('3') ? 'bg-violet-500' : 'bg-zinc-900'}`}
-                  title=" saber-mais">
-                  Saber mais
-                </ToggleGroup.Item> */}
               </ToggleGroup.Root>
             </div>
-
           </div>
 
           <footer className='mt-4 flex justify-end gap-4'>

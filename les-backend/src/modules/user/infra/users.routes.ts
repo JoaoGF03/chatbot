@@ -27,6 +27,6 @@ usersRouter.patch(
 );
 
 usersRouter.get('/', ensureAuthenticated, findAllUsersController.handle);
-usersRouter.get('/me/:id', ensureAuthenticated, displayMeController.handle);
+usersRouter.get('/me', ensureAuthenticated, displayMeController.handle);
 
 usersRouter.post('/', createUserController.handle);

@@ -21,6 +21,14 @@ export class UsersRepository implements IUsersRepository {
       },
     });
 
+    await prisma.flow.create({
+      data: {
+        name: 'Welcome',
+        message: 'Welcome to the DTA bot!',
+        userId: user.id,
+      },
+    });
+
     return user;
   }
 

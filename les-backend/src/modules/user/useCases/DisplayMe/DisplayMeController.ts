@@ -5,7 +5,7 @@ import { DisplayMeUseCase } from './DisplayMeUseCase';
 
 export class DisplayMeController {
   public async handle(request: Request, response: Response): Promise<Response> {
-    const { id } = request.params;
+    const { id } = request.user;
 
     const displayMe = container.resolve(DisplayMeUseCase);
 

@@ -9,10 +9,6 @@ module.exports = {
       sans: ['Inter', 'sans-serif'],
     },
     extend: {
-      colors: {
-        'primary': '#1a202c',
-        'secondary': '#2d3748',
-      },
       backgroundImage: {
         galaxy: 'url(background-galaxy.png)',
         'nlw-gradient': 'linear-gradient(90deg, #9572FC 20%, #43E7AD 50%, #E1D55D 100%)',

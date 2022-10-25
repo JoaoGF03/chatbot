@@ -11,6 +11,6 @@ export class FindAllFlowsController {
 
     const flow = await findAllFlowsUseCase.execute(id);
 
-    return response.status(201).json(flow);
+    return response.json(flow);
   }
 }

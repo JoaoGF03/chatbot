@@ -3,6 +3,8 @@ import 'express-async-errors';
 import '@shared/container';
 import cors from 'cors';
 import express, { Request, Response, NextFunction, json } from 'express';
+import { createServer } from 'http';
+import { Server } from 'socket.io';
 import swaggerUi from 'swagger-ui-express';
 
 import { AppError } from '@errors/AppError';
@@ -19,9 +21,13 @@ app.use(
   swaggerUi.serve,
   swaggerUi.setup(swaggerFile, {
     customCss,
-    customSiteTitle: 'PlayGames API',
+    customSiteTitle: 'DTA Chatbot API',
+    swaggerOptions: {
+      docExpansion: 'none',
+    },
   }),
 );
+
 app.use(cors());
 
 app.use(routes);
@@ -41,3 +47,11 @@ app.use(
     });
   },
 );
+
+export const httpServer = createServer(app);
+
+export const io = new Server(httpServer, {
+  cors: {
+    origin: '*',
+  },
+});

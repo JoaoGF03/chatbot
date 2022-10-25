@@ -2,7 +2,11 @@ import { Flow } from '@prisma/client';
 
 import { prisma } from '@shared/infra/prisma';
 
-import { ICreateFlowDTO } from '../FlowsDTO';
+import {
+  ICreateFlowDTO,
+  IFindFlowByNameDTO,
+  IUpdateFlowDTO,
+} from '../FlowsDTO';
 import { IFlowsRepository } from '../IFlowsRepository';
 
 export class FlowsRepository implements IFlowsRepository {
@@ -12,35 +16,31 @@ export class FlowsRepository implements IFlowsRepository {
     message,
     name,
     userId,
-    buttons,
+    buttons = [],
   }: ICreateFlowDTO): Promise<Flow> {
-    const buttonsData = buttons
-      ? {
-          connect: buttons.map(button => ({
-            id: button.id,
-          })),
-        }
-      : {};
     const flow = await this.ormRepository.create({
       data: {
         message,
         name,
         userId,
-        buttons: buttonsData,
-      },
-    });
-
-    await prisma.button.create({
-      data: {
-        name,
-        userId,
+        button: {
+          create: {
+            name,
+            userId,
+          },
+        },
+        buttons: {
+          connect: buttons.map(button => ({
+            id: button.id,
+          })),
+        },
       },
     });
 
     return flow;
   }
 
-  public async findById(id: string): Promise<Flow | null> {
+  public async findById(id: string): Promise<Flow> {
     const flow = await this.ormRepository.findUnique({
       where: {
         id,
@@ -55,12 +55,23 @@ export class FlowsRepository implements IFlowsRepository {
       where: {
         userId,
       },
+      include: {
+        buttons: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
     });
 
     return flows;
   }
 
-  public async findByName(name: string, userId: string): Promise<Flow> {
+  public async findByName(
+    name: string,
+    userId: string,
+  ): Promise<IFindFlowByNameDTO> {
     const flow = await this.ormRepository.findUnique({
       where: {
         name_createdBy: {
@@ -71,6 +82,7 @@ export class FlowsRepository implements IFlowsRepository {
       include: {
         buttons: {
           select: {
+            id: true,
             name: true,
           },
         },
@@ -78,5 +90,65 @@ export class FlowsRepository implements IFlowsRepository {
     });
 
     return flow;
+  }
+
+  public async update({
+    id,
+    message,
+    name,
+    oldName,
+    userId,
+    buttons = [],
+  }: IUpdateFlowDTO): Promise<void> {
+    if (name) {
+      await this.ormRepository.update({
+        where: {
+          id,
+        },
+        data: {
+          name,
+          message,
+          buttons: {
+            set: buttons.map(button => ({
+              id: button.id,
+            })),
+          },
+        },
+      });
+
+      await prisma.button.update({
+        where: {
+          name_createdBy: {
+            name: oldName,
+            userId,
+          },
+        },
+        data: {
+          name,
+        },
+      });
+    }
+
+    await this.ormRepository.update({
+      where: {
+        id,
+      },
+      data: {
+        message,
+        buttons: {
+          set: buttons.map(button => ({
+            id: button.id,
+          })),
+        },
+      },
+    });
+  }
+
+  public async delete(id: string): Promise<void> {
+    await this.ormRepository.delete({
+      where: {
+        id,
+      },
+    });
   }
 }

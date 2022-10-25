@@ -10,7 +10,7 @@ import { IUsersRepository } from '@modules/user/repositories/IUsersRepository';
 import { IAuthenticateUserDTO } from '@modules/user/repositories/UsersDTO';
 
 interface IResponse {
-  user: { id: string; name: string; email: string };
+  user: { id: string; name: string; email: string; admin: boolean };
   token: string;
 }
 
@@ -51,6 +51,7 @@ export class AuthenticateUserUseCase {
         id: user.id,
         name: user.name,
         email: user.email,
+        admin: user.admin,
       },
       token,
     };

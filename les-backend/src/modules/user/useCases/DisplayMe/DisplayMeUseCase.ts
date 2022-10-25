@@ -15,9 +15,7 @@ export class DisplayMeUseCase {
   public async execute(id: string): Promise<User | undefined> {
     const user = await this.usersRepository.findById(id);
 
-    if (!user) {
-      throw new AppError('User not found', 404);
-    }
+    if (!user) throw new AppError('User not found', 404);
 
     return user;
   }

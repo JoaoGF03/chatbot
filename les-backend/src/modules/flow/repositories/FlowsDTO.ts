@@ -1,3 +1,5 @@
+import { Flow } from '@prisma/client';
+
 export interface ICreateFlowDTO {
   name: string;
   message: string;
@@ -9,11 +11,20 @@ export interface ICreateFlowDTO {
 }
 
 export interface IUpdateFlowDTO {
-  name?: string;
-  message?: string;
+  id: string;
   userId: string;
+  name?: string;
+  oldName?: string;
+  message?: string;
   buttons?: {
     id: string;
     name: string;
   }[];
 }
+
+export type IFindFlowByNameDTO = Flow & {
+  buttons: {
+    name: string;
+    id: string;
+  }[];
+};

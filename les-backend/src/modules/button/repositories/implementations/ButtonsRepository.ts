@@ -2,22 +2,22 @@ import { Button } from '@prisma/client';
 
 import { prisma } from '@shared/infra/prisma';
 
-import { ICreateButtonDTO, IFindAllButtonsDTO } from '../ButtonsDTO';
+import { IFindAllButtonsDTO } from '../ButtonsDTO';
 import { IButtonsRepository } from '../IButtonsRepository';
 
 export class ButtonsRepository implements IButtonsRepository {
   private ormRepository = prisma.button;
 
-  public async create({ name, userId }: ICreateButtonDTO): Promise<Button> {
-    const button = await this.ormRepository.create({
-      data: {
-        name,
-        userId,
-      },
-    });
+  // public async create({ name, userId }: ICreateButtonDTO): Promise<Button> {
+  //   const button = await this.ormRepository.create({
+  //     data: {
+  //       name,
+  //       userId,
+  //     },
+  //   });
 
-    return button;
-  }
+  //   return button;
+  // }
 
   public async findById(id: string): Promise<Button | null> {
     const button = await this.ormRepository.findUnique({

@@ -11,6 +11,6 @@ export class FindAllButtonsController {
 
     const button = await findAllButtonsUseCase.execute(id);
 
-    return response.status(201).json(button);
+    return response.json(button);
   }
 }

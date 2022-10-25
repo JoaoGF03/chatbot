@@ -5,18 +5,20 @@ import { UpdateFlowUseCase } from './UpdateFlowUseCase';
 
 export class UpdateFlowController {
   public async handle(request: Request, response: Response): Promise<Response> {
+    const { id: userId } = request.user;
     const { name, message, buttons } = request.body;
-    const { id } = request.user;
+    const { id } = request.params;
 
     const createFlowUseCase = container.resolve(UpdateFlowUseCase);
 
-    const flow = await createFlowUseCase.execute({
+    await createFlowUseCase.execute({
       name,
       message,
       buttons,
-      userId: id,
+      userId,
+      id,
     });
 
-    return response.status(201).json(flow);
+    return response.status(204).send();
   }
 }

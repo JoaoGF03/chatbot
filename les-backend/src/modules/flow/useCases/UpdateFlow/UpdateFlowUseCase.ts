@@ -1,4 +1,3 @@
-import { Flow } from '@prisma/client';
 import { inject, injectable } from 'tsyringe';
 
 import { AppError } from '@errors/AppError';
@@ -14,22 +13,30 @@ export class UpdateFlowUseCase {
   ) {}
 
   public async execute({
+    id,
+    userId,
     buttons,
     message,
     name,
-    userId,
-  }: IUpdateFlowDTO): Promise<Flow> {
-    let flow = await this.flowsRepository.findByName(name, userId);
+  }: IUpdateFlowDTO): Promise<void> {
+    const flow = await this.flowsRepository.findById(id);
 
-    if (flow) throw new AppError('Flow already exists');
+    if (!flow) throw new AppError('Flow not found', 404);
 
-    flow = await this.flowsRepository.create({
-      buttons,
-      message,
-      name,
+    if (name) {
+      const flowExists = await this.flowsRepository.findByName(name, userId);
+
+      if (flowExists && flowExists.id !== id)
+        throw new AppError('Flow already exists', 409);
+    }
+
+    await this.flowsRepository.update({
+      id,
+      message: message || flow.message,
+      name: flow.name === 'Welcome' ? undefined : name || flow.name,
+      oldName: flow.name,
       userId,
+      buttons,
     });
-
-    return flow;
   }
 }
