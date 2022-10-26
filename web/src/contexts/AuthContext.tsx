@@ -7,17 +7,11 @@ import {
   useState,
 } from 'react';
 import { destroyCookie, parseCookies, setCookie } from 'nookies';
-import { setupAPIClient } from '../service/api';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
-
-type Account = {
-  id: string;
-  name: string;
-  email: string;
-  password: string;
-  admin: boolean;
-};
+import { queryClient } from '../service/query';
+import axios, { AxiosError } from 'axios';
+import { useGetMe, User } from '../hooks/useGetMe';
 
 type SignIn = {
   email: string;
@@ -29,7 +23,7 @@ interface AuthContextData {
   signOut: () => void;
   isLoading: boolean;
   isAuthenticated: boolean;
-  account: Account | undefined;
+  user: User | undefined;
 }
 
 type AuthProviderProps = {
@@ -38,31 +32,37 @@ type AuthProviderProps = {
 
 export const AuthContext = createContext({} as AuthContextData);
 
+export let api = axios.create({
+  baseURL: 'http://localhost:3333',
+  headers: {
+    Authorization: `Bearer ${parseCookies()['dta.token']}`,
+  },
+});
+
 export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
-  const [loggedAccount, setLoggedAccount] = useState<Account>();
+  const [loggedUser, setLoggedUser] = useState<User>();
   const [isLoading, setIsLoading] = useState(false);
-  const isAuthenticated = !!loggedAccount;
+  const isAuthenticated = !!loggedUser;
   const navigate = useNavigate();
-  const api = setupAPIClient();
+
+  const { data, refetch } = useGetMe()
 
   useEffect(() => {
-    const { 'dta.token': token } = parseCookies();
+    (async () => {
+      const { 'dta.token': token } = parseCookies();
 
-    if (token) {
-      api
-        .get('/users/me')
-        .then(response => {
-          setLoggedAccount(response.data);
-        })
-        .catch(() => {
-          signOut();
-        });
-    } else {
-      signOut();
-    }
+      if (token) {
+        await refetch()
+        setLoggedUser(data)
+      } else {
+        signOut();
+      }
+    })
   }, []);
 
-  const signOut = useCallback(() => {
+  const signOut = useCallback(async () => {
+    await queryClient.invalidateQueries(['flows', 'buttons', 'user']);
+
     destroyCookie(undefined, 'dta.token');
 
     navigate('/');
@@ -74,36 +74,33 @@ export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
 
       const response = await api.post('auth', { email, password });
 
-      const { account, token } = response.data;
+      const { user, token } = response.data;
 
       setCookie(undefined, 'dta.token', token, {
         maxAge: 60 * 60 * 24 * 30, // 30 days
         path: '/',
       });
 
-      setLoggedAccount(account);
+      setLoggedUser(user);
 
-      api.defaults.headers.common.Authorization = `Bearer ${token}`;
+      api = axios.create({
+        baseURL: 'http://localhost:3333',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-      navigate('/dash');
+      navigate('/home');
 
-    } catch (err: any) {
-      if (err.response.data) {
-        switch (err.response.data?.message) {
-          case 'Invalid login credentials':
-            toast.error(
-              'Erro ao logar! Verifique suas credenciais e tente novamente',
-            );
-            break;
-
-          default:
-            toast.error(
-              'Ocorreu um erro ao logar, tente novamente mais tarde',
-            );
-            console.log(err.response.data?.message);
-            break;
+    } catch (error: any) {
+      if (error instanceof AxiosError) {
+        if (error.response?.status === 401) {
+          toast.error('Email ou senha incorretos');
         }
+      } else {
+        toast.error('Ocorreu um erro ao fazer login');
       }
+
     } finally {
       setIsLoading(false);
     }
@@ -114,10 +111,10 @@ export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
       isAuthenticated,
       signIn,
       signOut,
-      account: loggedAccount,
+      user: loggedUser,
       isLoading,
     }),
-    [isAuthenticated, signIn, loggedAccount, isLoading],
+    [isAuthenticated, signIn, loggedUser, isLoading],
   );
   return (
     <AuthContext.Provider value={authContextData}>
