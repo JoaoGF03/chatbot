@@ -1,103 +1,57 @@
-import express from 'express'
-import cors from 'cors'
-import { Server } from 'socket.io'
-import { prisma } from '../prisma'
-import { createServer } from 'http'
+import 'reflect-metadata';
+import 'express-async-errors';
+import '@shared/container';
+import cors from 'cors';
+import express, { Request, Response, NextFunction, json } from 'express';
+import { createServer } from 'http';
+import { Server } from 'socket.io';
+import swaggerUi from 'swagger-ui-express';
 
-const app = express()
-app.use(express.json())
-app.use(cors())
+import { AppError } from '@errors/AppError';
+import { customCss } from '@utils/swaggerCss';
 
-app.get('/flow', async (request, response) => {
-  const flow = await prisma.flow.findMany({
-    select: {
-      id: true,
-      message: true,
-      name: true,
-      buttons: {
-        select: {
-          id: true,
-          body: true,
-        }
-      }
+import { routes } from './routes';
+import swaggerFile from './swagger.json';
+
+export const app = express();
+
+app.use(json());
+app.use(
+  '/api-docs',
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerFile, {
+    customCss,
+    customSiteTitle: 'DTA Chatbot API',
+    swaggerOptions: {
+      docExpansion: 'none',
+    },
+  }),
+);
+
+app.use(cors());
+
+app.use(routes);
+
+app.use(
+  (err: Error, _request: Request, response: Response, _next: NextFunction) => {
+    if (err instanceof AppError) {
+      return response.status(err.statusCode).json({
+        message: err.message,
+      });
     }
-  })
+    console.log('🚀 ~ file: app.ts ~ line 20 ~ err', err);
 
-  return response.json(flow)
-})
+    return response.status(500).json({
+      status: 'error',
+      message: `Internal server error:\n ${err.message}`,
+    });
+  },
+);
 
-app.post('/flow', async (request, response) => {
-  const { name, message } = request.body
-
-  const flowExists = await prisma.flow.findUnique({
-    where: { name_createdBy: { createdBy: 'admin', name } }
-  })
-
-  if (flowExists) return response.status(400).json({ error: 'Flow already exists' })
-
-  const flow = await prisma.flow.create({
-    data: {
-      name,
-      message,
-      createdBy: 'admin',
-    }
-  })
-
-  return response.json(flow)
-})
-
-app.put('/flow/:id', async (request, response) => {
-  const { id } = request.params
-  const { buttons, message } = request.body
-
-  const flowExists = await prisma.flow.findUnique({
-    where: { id }
-  })
-
-  if (!flowExists) return response.status(400).json({ error: 'Flow does not exists' })
-
-  const flow = await prisma.flow.update({
-    where: { id },
-    data: {
-      buttons,
-      message
-    }
-  })
-
-  return response.json(flow)
-})
-
-app.delete('/flow/:id', async (request, response) => {
-  const { id } = request.params
-
-  const flowExists = await prisma.flow.findUnique({
-    where: { id }
-  })
-
-  if (!flowExists) return response.status(400).json({ error: 'Flow does not exists' })
-
-  await prisma.flow.delete({
-    where: { id },
-  })
-
-  return response.status(204).send()
-})
-
-app.get('/button', async (request, response) => {
-  const button = await prisma.button.findMany({
-    select: {
-      id: true,
-      body: true,
-    }
-  })
-
-  return response.json(button)
-})
-
-export const httpServer = createServer(app)
+export const httpServer = createServer(app);
 
 export const io = new Server(httpServer, {
   cors: {
     origin: '*',
   },
-})
+});
