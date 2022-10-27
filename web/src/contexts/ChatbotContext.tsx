@@ -30,7 +30,7 @@ export function ChatbotProvider({
 
   useEffect(() => {
     socket.current = io('http://localhost:3333', {
-      forceNew: false,
+      autoConnect: false,
     });
 
     socket.current.on('connect', () => {
@@ -57,10 +57,12 @@ export function ChatbotProvider({
 
   const startBot = () => {
     if (!user) return
+    
+    socket.current?.connect();
+
     socket.current?.emit('chatbot:start', {
       id: user.id,
     });
-    console.log('🚀 ~ file: ChatbotContext.tsx ~ line 56 ~ startBot ~ socket.current', user.id)
   };
 
   return (

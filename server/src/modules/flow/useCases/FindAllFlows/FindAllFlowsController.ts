@@ -11,9 +11,6 @@ export class FindAllFlowsController {
 
     const flow = await findAllFlowsUseCase.execute(id);
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    setTimeout(() => {}, 5000);
-
     return response.json(flow);
   }
 }

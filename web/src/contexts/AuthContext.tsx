@@ -48,16 +48,20 @@ export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
   const { data, refetch } = useGetMe()
 
   useEffect(() => {
-    (async () => {
+    setLoggedUser(data)
+  }, [data])
+
+  useEffect(() => {
+    const exec = async () => {
       const { 'dta.token': token } = parseCookies();
 
       if (token) {
         await refetch()
-        setLoggedUser(data)
       } else {
         signOut();
       }
-    })
+    }
+    exec()
   }, []);
 
   const signOut = useCallback(async () => {

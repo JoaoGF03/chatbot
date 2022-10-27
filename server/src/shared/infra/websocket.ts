@@ -9,8 +9,12 @@ io.on('connection', socket => {
   });
 
   socket.on('chatbot:start', async args => {
+    console.log('🚀 ~ file: websocket.ts ~ line 155 ~ args', args)
     let firstMessage = false;
+    let users = []
     const userId: string = args.id;
+
+    socket.join(userId);
 
     const client = new Client({
       puppeteer: {
@@ -31,28 +35,25 @@ io.on('connection', socket => {
         console.log(`🚀 ~ timestamp ${timestamp} ~ status ${status}`);
         setTimeout(checkInstance, 60000);
       } catch {
-        client.initialize();
+        io.to(userId).emit('chatbot:disconnected');
       }
     };
 
     client.initialize();
 
     client.on('qr', qr => {
-      io.emit('chatbot:qr', qr);
+      console.log('🚀 ~ file: websocket.ts ~ line 46 ~ qr', qr)
+      io.to(userId).emit('chatbot:qr', qr);
     });
 
     client.on('ready', async () => {
       console.log('Client is ready!');
       checkInstance();
-      io.emit('chatbot:ready');
+      io.to(userId).emit('chatbot:ready');
     });
 
     client.on('message_create', async msg => {
-      console.log(
-        '🚀 ~ file: websocket.ts ~ line 143 ~ msg',
-        msg.body,
-        msg.type,
-      );
+
       const chat = await msg.getChat();
 
       if (chat.isGroup) return;
@@ -60,10 +61,16 @@ io.on('connection', socket => {
       const contact = await msg.getContact();
 
       if (
-        contact.id.user === '559191777171' ||
-        contact.id.user === '5527992596466'
+        contact.id.user === '5527992596466' || contact.id.user === '5527999768155' || contact.id.user === '5527992818789'
       ) {
-        if (!firstMessage) {
+        const user = users.find(user => user.id === contact.id.user)
+
+        if (!user) users.push({
+          id: contact.id.user,
+          isFirstMessage: false
+        })
+
+        if (!user || user?.isFirstMessage) {
           const flow = await prisma.flow.findUnique({
             where: {
               name_createdBy: {
@@ -88,10 +95,6 @@ io.on('connection', socket => {
             .replace(/\\n/g, '\n')
             .replace('{name}', contact.name || contact.pushname);
 
-          console.log(
-            '🚀 ~ file: websocket.ts ~ line 73 ~ socket.on ~ message',
-            message,
-          );
 
           await client.sendMessage(
             msg.from,
@@ -145,7 +148,7 @@ io.on('connection', socket => {
     });
 
     client.on('disconnected', () => {
-      io.emit('chatbot:disconnected');
+      io.to(userId).emit('chatbot:disconnected');
     });
 
     socket.on('disconnect', () => {
