@@ -24,7 +24,7 @@ export function CreateFlowModal({ refetch, setOpen }: CreateFlowModalProps) {
 
     const data = Object.fromEntries(formData)
 
-    if (!data.name || !data.description) {
+    if (!data.name || !data.message) {
       return toast.warn('Preencha todos os campos')
     }
 
@@ -92,7 +92,7 @@ export function CreateFlowModal({ refetch, setOpen }: CreateFlowModalProps) {
             </div>
           </div>
 
-          <footer className='mt-4 flex justify-end gap-4'>
+          <footer className='mt-4 flex justify-between gap-4'>
             <Dialog.Close
               type='button'
               className='bg-zinc-500 px-5 h-12 rounded-md font-semibold hover:bg-zinc-600'

@@ -17,6 +17,7 @@ interface EditFlowModalProps {
 
 export function EditFlowModal({ flow, refetch, setOpen }: EditFlowModalProps) {
   const [buttons, setButtons] = useState<string[]>([])
+  const [deleteDialog, setDeleteDialog] = useState(false)
   const { data } = useGetButtons()
 
   useEffect(() => {
@@ -41,6 +42,17 @@ export function EditFlowModal({ flow, refetch, setOpen }: EditFlowModalProps) {
       setOpen(false)
     } catch (error) {
       toast.error('Erro ao editar fluxo')
+    }
+  }
+
+  async function handleDeleteFlow() {
+    try {
+      await api.delete(`/flows/${flow.id}`)
+
+      refetch()
+      setOpen(false)
+    } catch (error) {
+      toast.error('Erro ao deletar fluxo')
     }
   }
 
@@ -91,7 +103,7 @@ export function EditFlowModal({ flow, refetch, setOpen }: EditFlowModalProps) {
             </div>
           </div>
 
-          <footer className='mt-4 flex justify-end gap-4'>
+          <footer className='mt-4 flex justify-between'>
             <Dialog.Close
               type='button'
               className='bg-zinc-500 px-5 h-12 rounded-md font-semibold hover:bg-zinc-600'
@@ -99,16 +111,56 @@ export function EditFlowModal({ flow, refetch, setOpen }: EditFlowModalProps) {
               Cancelar
             </Dialog.Close>
 
-            <button
-              type='submit'
-              className='bg-violet-500 px-5 h-12 rounded-md font-semibold flex items-center gap-3 hover:bg-violet-600'
-            >
-              Editar
-            </button>
+            <div className='flex gap-4'>
+              <button
+                type='button'
+                className='bg-red-500 px-5 h-12 rounded-md font-semibold hover:bg-red-600'
+                onClick={() => setDeleteDialog(true)}
+              >
+                Deletar
+              </button>
+
+              <button
+                type='submit'
+                className='bg-violet-500 px-5 h-12 rounded-md font-semibold hover:bg-violet-600'
+              >
+                Editar
+              </button>
+            </div>
           </footer>
 
         </form>
       </Dialog.Content>
+
+      <Dialog.Root open={deleteDialog}>
+        <Dialog.Overlay className='fixed inset-0 bg-black/60' />
+        <Dialog.Content onCloseAutoFocus={e => e.preventDefault()} className='fixed bg-[#2A2634] py-8 px-10 text-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-lg w-[400px] shadow-lg shadow-black/25'>
+          <Dialog.Title className='text-3xl font-black'>
+            Deletar fluxo
+          </Dialog.Title>
+
+          <p className='mt-8 text-lg'>Tem certeza que deseja deletar esse fluxo?</p>
+
+          <footer className='mt-4 flex justify-between'>
+            <button
+              type='button'
+              className='bg-zinc-500 px-5 h-12 rounded-md font-semibold hover:bg-zinc-600'
+              onClick={() => setDeleteDialog(false)}
+            >
+              Cancelar
+            </button>
+
+            <button
+              type='button'
+              className='bg-red-500 px-5 h-12 rounded-md font-semibold hover:bg-red-600'
+              onClick={handleDeleteFlow}
+            >
+              Deletar
+            </button>
+          </footer>
+        </Dialog.Content>
+
+      </Dialog.Root>
     </Dialog.Portal>
   )
 }

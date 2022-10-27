@@ -1,10 +1,12 @@
 import React, {
   createContext,
+  useContext,
   useEffect,
   useRef,
   useState,
 } from 'react';
 import { io, Socket } from 'socket.io-client';
+import { AuthContext } from './AuthContext';
 
 interface IChatbotContext {
   qrCode: string;
@@ -24,6 +26,7 @@ export function ChatbotProvider({
   const socket = useRef<Socket>();
   const [isBotConnected, setIsBotConnected] = useState(false);
   const [qrCode, setQrCode] = useState<string>('');
+  const { user } = useContext(AuthContext)
 
   useEffect(() => {
     socket.current = io('http://localhost:3333', {
@@ -35,6 +38,7 @@ export function ChatbotProvider({
     });
 
     socket.current.on('chatbot:qr', (qr: string) => {
+      console.log('🚀 ~ file: ChatbotContext.tsx ~ line 43 ~ socket.current.on ~ qr', qr)
       setQrCode(qr);
     });
 
@@ -52,8 +56,11 @@ export function ChatbotProvider({
   }, []);
 
   const startBot = () => {
-    socket.current?.emit('chatbot:start');
-    console.log('🚀 ~ file: ChatbotContext.tsx ~ line 56 ~ startBot ~ socket.current', socket.current)
+    if (!user) return
+    socket.current?.emit('chatbot:start', {
+      id: user.id,
+    });
+    console.log('🚀 ~ file: ChatbotContext.tsx ~ line 56 ~ startBot ~ socket.current', user.id)
   };
 
   return (

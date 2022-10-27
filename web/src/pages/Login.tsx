@@ -41,7 +41,7 @@ export default function Login() {
               disabled={isLoading}
               className='bg-violet-500 px-5 h-12 rounded-md font-semibold flex items-center gap-3 hover:bg-violet-600'
             >
-              Editar
+              Entrar
             </button>
           </footer>
 

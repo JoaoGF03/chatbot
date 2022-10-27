@@ -8,16 +8,18 @@ io.on('connection', socket => {
     console.log(`${socket.id} logged in`);
   });
 
-  socket.on('chatbot:start', async socket => {
+  socket.on('chatbot:start', async args => {
     let firstMessage = false;
-    const createdBy: string = socket.id;
+    const userId: string = args.id;
 
     const client = new Client({
       puppeteer: {
         headless: true,
         args: ['--no-sandbox'],
       },
-      authStrategy: new LocalAuth(),
+      authStrategy: new LocalAuth({
+        clientId: userId,
+      }),
     });
 
     const checkInstance = async () => {
@@ -46,6 +48,11 @@ io.on('connection', socket => {
     });
 
     client.on('message_create', async msg => {
+      console.log(
+        '🚀 ~ file: websocket.ts ~ line 143 ~ msg',
+        msg.body,
+        msg.type,
+      );
       const chat = await msg.getChat();
 
       if (chat.isGroup) return;
@@ -60,8 +67,8 @@ io.on('connection', socket => {
           const flow = await prisma.flow.findUnique({
             where: {
               name_createdBy: {
-                createdBy,
-                name: 'start',
+                name: 'Welcome',
+                userId,
               },
             },
             include: {
@@ -73,8 +80,8 @@ io.on('connection', socket => {
 
           const buttons = flow.buttons.map(button => {
             return {
-              id: button.body,
-              body: button.body,
+              id: button.name,
+              body: button.name,
             };
           });
           const message = flow.message
@@ -109,7 +116,7 @@ io.on('connection', socket => {
           const flow = await prisma.flow.findUnique({
             where: {
               name_createdBy: {
-                createdBy,
+                userId,
                 name: selectedButtonId,
               },
             },
@@ -122,8 +129,8 @@ io.on('connection', socket => {
 
           const buttons = flow.buttons.map(button => {
             return {
-              id: button.body,
-              body: button.body,
+              id: button.name,
+              body: button.name,
             };
           });
 

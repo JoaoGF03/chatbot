@@ -26,7 +26,7 @@ export function FlowCard({ flow, selectFlow }: FlowCardProps) {
       <div className='flex-grow' />
       <div className='flex flex-wrap gap-2 justify-self-end mt-1'>
         {flow.buttons.map(button => (
-          <div key={button.id} className='py-1 px-3 bg-violet-500 hover:bg-violet-600 text-white font-bold rounded flex items-center gap-3 text-sm'>
+          <div key={button.id} className='pointer-events-none py-1 px-3 bg-violet-500 text-white font-bold rounded flex items-center gap-3 text-sm'>
             {button.name}
           </div>
         ))}

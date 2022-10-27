@@ -12,9 +12,9 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <ToastContainer autoClose={3000} />
-        {/* <ChatbotProvider> */}
-        <Router />
-        {/* </ChatbotProvider> */}
+        <ChatbotProvider>
+          <Router />
+        </ChatbotProvider>
       </AuthProvider>
     </QueryClientProvider>
   )

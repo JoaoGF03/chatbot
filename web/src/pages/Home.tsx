@@ -2,7 +2,7 @@ import * as Dialog from '@radix-ui/react-dialog'
 
 import { useContext, useState } from 'react'
 import QRCode from 'react-qr-code';
-import { ChatText } from 'phosphor-react';
+import { ChatText, Robot } from 'phosphor-react';
 
 import { ChatbotContext } from '../contexts/ChatbotContext';
 import { FlowCard } from '../components/FlowCard';
@@ -10,6 +10,7 @@ import { CreateFlowModal } from '../components/CreateFlowModal';
 import { EditFlowModal } from '../components/EditFlowModal';
 import { Flow, useGetFlows } from '../hooks/useGetFlows';
 import { Header } from '../components/Header';
+import { Loading } from '../components/Loading';
 
 export default function Home() {
   const [isCreateFlowModalOpen, setIsCreateFlowModalOpen] = useState(false)
@@ -30,47 +31,62 @@ export default function Home() {
     <div className='max-w-[1344px] mx-auto flex flex-col items-center'>
       <Header />
 
-      <h1 className='text-6xl text-white font-black'>
-        Seu bot está
-        {isBotConnected ? ' online' : ' offline'}
-      </h1>
+      <div className='self-stretch flex justify-between items-center mx-4 mt-8'>
+        <h1 className='text-6xl text-white font-black'>
+          Bem vindo ao <span className='text-transparent bg-nlw-gradient bg-clip-text'>Flow</span>
 
-      {qrCode || isBotConnected ? null : (
-        <button
-          className="mt-16 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-          onClick={() => startBot()}>
-          Iniciar bot
-        </button>
-      )}
+          <div className='text-2xl text-gray-400 font-normal mt-2'>
+            Crie e gerencie seus fluxos de conversa
+          </div>
+        </h1>
+
+        <div className='flex flex-col items-end'>
+          <button
+            className='py-3 px-6 mt-4 bg-violet-500 hover:bg-violet-600 text-white font-bold rounded flex items-center gap-3'
+            onClick={() => startBot()}
+            disabled={isBotConnected}
+          >
+            Iniciar bot
+            <Robot size={24} />
+          </button>
+
+          <button
+            className='py-3 px-6 mt-4 bg-violet-500 hover:bg-violet-600 text-white font-bold rounded flex items-center gap-3'
+            onClick={() => setIsCreateFlowModalOpen(true)}
+          >
+            Criar mensagem
+            <ChatText size={24} />
+          </button>
+
+          <Dialog.Root >
+            <Dialog.Trigger className='py-3 px-6 mt-4 bg-violet-500 hover:bg-violet-600 text-white font-bold rounded flex items-center gap-3'>
+              <span>QRCode</span>
+              <ChatText size={24} />
+            </Dialog.Trigger>
+            <Dialog.Overlay className='fixed inset-0 bg-black/60' />
+            <Dialog.Content className='fixed bg-[#2A2634] py-8 px-10 text-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-lg w-[384px] shadow-lg shadow-black/25'>
+              <Dialog.Title className='text-2xl font-bold mb-4'>
+                QRCode
+              </Dialog.Title>
+              <div className='flex flex-col items-center gap-8'>
+                {qrCode
+                  ? <>
+                    <QRCode value={qrCode} size={256} />
+                    <span className='text-sm text-gray-400'>Escaneie o QRCode com o WhatsApp Web</span>
+                  </>
+                  : <Loading />}
+              </div>
+            </Dialog.Content>
+          </Dialog.Root>
+        </div>
+      </div>
 
       <Dialog.Root open={isCreateFlowModalOpen} onOpenChange={setIsCreateFlowModalOpen}>
-        <div className='pt-1 mx-4 mt-8 bg-nlw-gradient self-stretch rounded-lg overflow-hidden'>
-          <div className="bg-[#2A2634] px-8 py-6 flex justify-between items-center">
-            <strong className='text-2xl text-white font-black block'>
-              Criar novo fluxo de mensagem
-            </strong>
-
-            <Dialog.Trigger className='py-3 px-6 mt-4 bg-violet-500 hover:bg-violet-600 text-white font-bold rounded flex items-center gap-3'>
-              <ChatText size={24} />
-              Criar mensagem
-            </Dialog.Trigger>
-          </div>
-        </div>
         <CreateFlowModal refetch={refetch} setOpen={setIsCreateFlowModalOpen} />
       </Dialog.Root>
 
-      {qrCode && (
-        <div className='mt-16 w-72 h-auto p-4 bg-white flex items-center justify-center rounded-xl'>
-          <QRCode
-            size={256}
-            value={qrCode}
-            viewBox="0 0 256 256"
-          />
-        </div>
-      )}
-
       <Dialog.Root open={isEditFlowModalOpen} onOpenChange={setIsEditFlowModalOpen} >
-        <div className='flex flex-wrap w-full gap-4 justify-center m-8'>
+        <div className='flex flex-wrap w-full gap-4 justify-center mt-8'>
           {data
             ?.sort((a) => a.name === 'Welcome' ? -1 : 1)
             .map(flow => (
