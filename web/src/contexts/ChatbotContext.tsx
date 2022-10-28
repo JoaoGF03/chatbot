@@ -1,3 +1,4 @@
+import { parseCookies } from 'nookies';
 import React, {
   createContext,
   useContext,
@@ -11,7 +12,9 @@ import { AuthContext } from './AuthContext';
 interface IChatbotContext {
   qrCode: string;
   isBotConnected: boolean;
+  isBotConnecting: boolean;
   startBot(): void;
+  stopBot(): void;
 }
 
 export const ChatbotContext = createContext<IChatbotContext>(
@@ -25,8 +28,10 @@ export function ChatbotProvider({
 }) {
   const socket = useRef<Socket>();
   const [isBotConnected, setIsBotConnected] = useState(false);
+  const [isBotConnecting, setIsBotConnecting] = useState(false);
   const [qrCode, setQrCode] = useState<string>('');
   const { user } = useContext(AuthContext)
+  const { 'dta.token': token } = parseCookies();
 
   useEffect(() => {
     socket.current = io('http://localhost:3333', {
@@ -34,18 +39,33 @@ export function ChatbotProvider({
     });
 
     socket.current.on('connect', () => {
-      console.log('🚀 socket.current.id: ', socket.current?.id);
+      if (token) {
+        socket.current?.emit('chatbot:connected',
+          token,
+          function (error: boolean, message: string) {
+            if (error) {
+              console.log('🚀 error: ', message);
+            } else {
+              console.log('🚀 message: ', message);
+              if (message === 'Connected') {
+                setIsBotConnected(true);
+              } else {
+                setIsBotConnected(false);
+              }
+            }
+          }
+        )
+      }
     });
 
     socket.current.on('chatbot:qr', (qr: string) => {
-      console.log('🚀 ~ file: ChatbotContext.tsx ~ line 43 ~ socket.current.on ~ qr', qr)
       setQrCode(qr);
     });
 
     socket.current.on('chatbot:ready', () => {
-      console.log('🚀 ~  ready');
       setQrCode('');
       setIsBotConnected(true);
+      setIsBotConnecting(false);
     });
 
     socket.current.on('chatbot:disconnected', () => {
@@ -55,13 +75,34 @@ export function ChatbotProvider({
     });
   }, []);
 
+  if (user) {
+    socket.current?.connect()
+  }
+
+  if (!token) {
+    socket.current?.disconnect()
+  }
+
   const startBot = () => {
     if (!user) return
-    
-    socket.current?.connect();
 
     socket.current?.emit('chatbot:start', {
       id: user.id,
+    });
+
+    setIsBotConnecting(true);
+  };
+
+  const stopBot = () => {
+    socket.current?.emit('chatbot:stop', token, function (error: boolean, message: string) {
+      if (error) {
+        console.log('🚀 error: ', message);
+      } else {
+        console.log('🚀 message: ', message);
+        if (message === 'Disconnected') {
+          setIsBotConnected(false);
+        }
+      }
     });
   };
 
@@ -69,8 +110,10 @@ export function ChatbotProvider({
     <ChatbotContext.Provider
       value={{
         qrCode,
-        isBotConnected,
         startBot,
+        stopBot,
+        isBotConnected,
+        isBotConnecting,
       }}
     >
       {children}

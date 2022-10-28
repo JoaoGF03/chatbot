@@ -17,7 +17,7 @@ export default function Home() {
   const [isEditFlowModalOpen, setIsEditFlowModalOpen] = useState(false)
   const [flow, setFlow] = useState<Flow>({} as Flow)
 
-  const { startBot, qrCode, isBotConnected } = useContext(ChatbotContext);
+  const { stopBot, startBot, qrCode, isBotConnected, isBotConnecting } = useContext(ChatbotContext);
   const { isFetching, data, refetch } = useGetFlows()
 
   if (isFetching)
@@ -43,10 +43,9 @@ export default function Home() {
         <div className='flex flex-col items-end'>
           <button
             className='py-3 px-6 mt-4 bg-violet-500 hover:bg-violet-600 text-white font-bold rounded flex items-center gap-3'
-            onClick={() => startBot()}
-            disabled={isBotConnected}
+            onClick={() => isBotConnected ? stopBot() : startBot()}
           >
-            Iniciar bot
+            {isBotConnecting ? 'Iniciando' : isBotConnected ? 'Pausar bot' : 'Iniciar bot'}
             <Robot size={24} />
           </button>
 
@@ -58,11 +57,7 @@ export default function Home() {
             <ChatText size={24} />
           </button>
 
-          <Dialog.Root >
-            <Dialog.Trigger className='py-3 px-6 mt-4 bg-violet-500 hover:bg-violet-600 text-white font-bold rounded flex items-center gap-3'>
-              <span>QRCode</span>
-              <ChatText size={24} />
-            </Dialog.Trigger>
+          <Dialog.Root open={!!qrCode} >
             <Dialog.Overlay className='fixed inset-0 bg-black/60' />
             <Dialog.Content className='fixed bg-[#2A2634] py-8 px-10 text-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-lg w-[384px] shadow-lg shadow-black/25'>
               <Dialog.Title className='text-2xl font-bold mb-4'>
@@ -71,7 +66,9 @@ export default function Home() {
               <div className='flex flex-col items-center gap-8'>
                 {qrCode
                   ? <>
-                    <QRCode value={qrCode} size={256} />
+                    <div className='border-4 rounded-md border-white'>
+                      <QRCode value={qrCode} size={256} />
+                    </div>
                     <span className='text-sm text-gray-400'>Escaneie o QRCode com o WhatsApp Web</span>
                   </>
                   : <Loading />}
