@@ -1,5 +1,6 @@
 import * as Dialog from '@radix-ui/react-dialog'
 import { Pen } from 'phosphor-react';
+import { forwardRef } from 'react';
 import { Flow } from '../hooks/useGetFlows';
 
 interface FlowCardProps {
@@ -7,19 +8,19 @@ interface FlowCardProps {
   selectFlow: (flow: Flow) => void
 }
 
-export function FlowCard({ flow, selectFlow }: FlowCardProps) {
+function FlowCard({ flow, selectFlow }: FlowCardProps) {
   return (
-    <div key={flow.id} className="rounded-lg bg-[#2A2634] px-6 py-6 flex flex-col max-h-72 max-w-[31.5%] min-w-[31.5%]">
+    <div key={flow.id} className="rounded-lg bg-[#2A2634] px-6 py-6 flex flex-col max-h-72 sm:mx-0 w-full ">
       <div className='flex justify-between'>
         <strong className='text-xl text-white font-black block'>
-          {flow.name}
+          {flow.name.replace('Welcome', 'Bem vindo')}
         </strong>
-        <Dialog.Trigger className="text-white" onClick={() => selectFlow(flow)}>
-          <Pen size={24} />
+        <Dialog.Trigger className="text-white hover:text-violet-500" onClick={() => selectFlow(flow)}>
+          <Pen size={24} weight='bold'/>
         </Dialog.Trigger>
       </div>
 
-      <strong className='text-gray-200 font-black block my-4 overflow-auto h-auto whitespace-pre-line'>
+      <strong className='text-gray-200 font-black block my-4 break-words overflow-auto h-auto whitespace-pre-line'>
         {flow.message.replace(/\\n/g, '\n')}
       </strong>
 
@@ -34,3 +35,5 @@ export function FlowCard({ flow, selectFlow }: FlowCardProps) {
     </div>
   )
 }
+
+export default forwardRef(FlowCard)

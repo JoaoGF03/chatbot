@@ -48,6 +48,7 @@ io.on('connection', socket => {
   socket.on('chatbot:start', async args => {
     const users = [] as { id: string; isFirstMessage: boolean }[];
     const userId: string = args.id;
+    let tries = 0;
 
     socket.join(userId);
 
@@ -70,7 +71,7 @@ io.on('connection', socket => {
 
     const client = new Client({
       puppeteer: {
-        headless: true,
+        headless: false,
         args: ['--no-sandbox'],
       },
       authStrategy: new LocalAuth({
@@ -91,11 +92,26 @@ io.on('connection', socket => {
     //   }
     // };
 
-    client.initialize();
+    client.initialize().catch(async () => {
+      await client.destroy();
+      clients.delete(hasClient);
+      io.to(userId).emit('chatbot:disconnected');
+    });
 
     client.on('qr', qr => {
-      console.log('🚀 ~ file: websocket.ts ~ line 46 ~ qr', qr);
-      io.to(userId).emit('chatbot:qr', qr);
+      // limit to 3 tries to scan the qr code
+      if (tries < 3) {
+        tries += 1;
+        users.push({ id: userId, isFirstMessage: true });
+        io.to(userId).emit('chatbot:qr', qr);
+        console.log('🚀 ~ file: websocket.ts ~ line 101 ~ qr', qr);
+      } else {
+        tries = 0;
+        io.to(userId).emit('chatbot:qr', 'expired');
+        client.destroy();
+      }
+      // console.log('🚀 ~ file: websocket.ts ~ line 46 ~ qr', qr);
+      // io.to(userId).emit('chatbot:qr', qr);
     });
 
     client.on('ready', async () => {
@@ -105,7 +121,7 @@ io.on('connection', socket => {
       clients.add({ userId, client });
     });
 
-    client.on('message_create', async msg => {
+    client.on('message', async msg => {
       const chat = await msg.getChat();
 
       if (chat.isGroup) return;
@@ -114,10 +130,8 @@ io.on('connection', socket => {
 
       if (
         contact.id.user === '5527992596466' ||
-        contact.id.user === '5527999768155' ||
-        contact.id.user === '5527992818789'
+        contact.id.user === '4915736983068'
       ) {
-        console.log('🚀 ', msg.body);
         const user = users.find(user => {
           return user.id === contact.id.user;
         });

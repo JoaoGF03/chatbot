@@ -7,6 +7,7 @@ import Input from './Form/Input';
 import TextArea from './Form/TextArea';
 import { api } from '../contexts/AuthContext';
 import { toast } from 'react-toastify';
+import { XCircle } from 'phosphor-react';
 
 interface CreateFlowModalProps {
   refetch: () => void
@@ -49,10 +50,17 @@ export function CreateFlowModal({ refetch, setOpen }: CreateFlowModalProps) {
     <Dialog.Portal >
       <Dialog.Overlay className='fixed inset-0 bg-black/60' />
 
-      <Dialog.Content className='fixed bg-[#2A2634] py-8 px-10 text-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-lg w-[480px] shadow-lg shadow-black/25'>
+      <Dialog.Content className='fixed bg-[#2A2634] py-8 px-10 text-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-lg shadow-lg shadow-black/25 w-[90%] sm:w-[480px]'>
         <Dialog.Title className='text-3xl font-black'>
           Criei uma mensagem
         </Dialog.Title>
+
+        <Dialog.Close
+          type='button'
+          className='fixed text-white rounded-lg top-4 right-4 p-2 hover:text-violet-500'
+        >
+          <XCircle size={32} weight='bold'/>
+        </Dialog.Close>
 
         <form onSubmit={handleCreateFlow} className='mt-8 flex flex-col gap-4'>
           <div className='flex flex-col gap-2'>
@@ -92,17 +100,10 @@ export function CreateFlowModal({ refetch, setOpen }: CreateFlowModalProps) {
             </div>
           </div>
 
-          <footer className='mt-4 flex justify-between gap-4'>
-            <Dialog.Close
-              type='button'
-              className='bg-zinc-500 px-5 h-12 rounded-md font-semibold hover:bg-zinc-600'
-            >
-              Cancelar
-            </Dialog.Close>
-
+          <footer className='mt-4 flex justify-end gap-4'>
             <button
               type='submit'
-              className='bg-violet-500 px-5 h-12 rounded-md font-semibold flex items-center gap-3 hover:bg-violet-600'
+              className='bg-violet-500 px-5 h-12 rounded-md font-semibold hover:bg-violet-600 w-full sm:w-[35%] mt-4 sm:mt-0'
             >
               Criar
             </button>

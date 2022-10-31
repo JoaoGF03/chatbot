@@ -1,16 +1,16 @@
 import * as Dialog from '@radix-ui/react-dialog'
 
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import QRCode from 'react-qr-code';
-import { ChatText, Robot } from 'phosphor-react';
+import { ChatText, Pause, SpinnerGap, Robot } from 'phosphor-react';
 
 import { ChatbotContext } from '../contexts/ChatbotContext';
-import { FlowCard } from '../components/FlowCard';
+import FlowCard from '../components/FlowCard';
 import { CreateFlowModal } from '../components/CreateFlowModal';
 import { EditFlowModal } from '../components/EditFlowModal';
 import { Flow, useGetFlows } from '../hooks/useGetFlows';
 import { Header } from '../components/Header';
-import { Loading } from '../components/Loading';
+import { AuthContext } from '../contexts/AuthContext';
 
 export default function Home() {
   const [isCreateFlowModalOpen, setIsCreateFlowModalOpen] = useState(false)
@@ -18,43 +18,41 @@ export default function Home() {
   const [flow, setFlow] = useState<Flow>({} as Flow)
 
   const { stopBot, startBot, qrCode, isBotConnected, isBotConnecting } = useContext(ChatbotContext);
-  const { isFetching, data, refetch } = useGetFlows()
+  const { user } = useContext(AuthContext)
+  const { data, refetch } = useGetFlows()
 
-  if (isFetching)
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
-      </div>
-    )
+  useEffect(() => {
+    console.log('🚀 ~ file: Home.tsx ~ line 28 ~ useEffect ~ isBotConnected', isBotConnected)
+  }, [isBotConnected])
 
   return (
     <div className='max-w-[1344px] mx-auto flex flex-col items-center'>
       <Header />
 
-      <div className='self-stretch flex justify-between items-center mx-4 mt-8'>
-        <h1 className='text-6xl text-white font-black'>
-          Bem vindo ao <span className='text-transparent bg-nlw-gradient bg-clip-text'>Flow</span>
+      <div className='self-stretch flex-wrap sm:flex justify-between items-center mx-4 mt-0'>
+        <h1 className='text-3xl md:text-4xl text-white font-black'>
+          Bem vindo {user?.name.split(' ')[0]}!
 
-          <div className='text-2xl text-gray-400 font-normal mt-2'>
+          <div className='text-lg md:text-xl text-gray-400 font-normal'>
             Crie e gerencie seus fluxos de conversa
           </div>
         </h1>
 
-        <div className='flex flex-col items-end'>
+        <div className='flex-wrap sm:flex-col sm:flex gap-2'>
           <button
-            className='py-3 px-6 mt-4 bg-violet-500 hover:bg-violet-600 text-white font-bold rounded flex items-center gap-3'
+            className='py-1 sm:py-2 sm:px-4 md:py-3 md:px-6 bg-violet-500 hover:bg-violet-600 text-white font-bold rounded flex justify-center gap-3 w-full sm:w-auto my-2 sm:mb-0'
             onClick={() => isBotConnected ? stopBot() : startBot()}
           >
             {isBotConnecting ? 'Iniciando' : isBotConnected ? 'Pausar bot' : 'Iniciar bot'}
-            <Robot size={24} />
+            {isBotConnecting ? <SpinnerGap className='animate-spin' size={24} /> : isBotConnected ? <Pause size={24} weight='bold' /> : <Robot size={24} weight='bold' />}
           </button>
 
           <button
-            className='py-3 px-6 mt-4 bg-violet-500 hover:bg-violet-600 text-white font-bold rounded flex items-center gap-3'
+            className='py-1 sm:py-2 sm:px-4 md:py-3 md:px-6 bg-violet-500 hover:bg-violet-600 text-white font-bold rounded flex justify-center gap-3  w-full sm:w-auto'
             onClick={() => setIsCreateFlowModalOpen(true)}
           >
             Criar mensagem
-            <ChatText size={24} />
+            <ChatText size={24} weight='bold' />
           </button>
 
           <Dialog.Root open={!!qrCode} >
@@ -71,7 +69,7 @@ export default function Home() {
                     </div>
                     <span className='text-sm text-gray-400'>Escaneie o QRCode com o WhatsApp Web</span>
                   </>
-                  : <Loading />}
+                  : <SpinnerGap className='animate-spin' size={24} />}
               </div>
             </Dialog.Content>
           </Dialog.Root>
@@ -83,12 +81,14 @@ export default function Home() {
       </Dialog.Root>
 
       <Dialog.Root open={isEditFlowModalOpen} onOpenChange={setIsEditFlowModalOpen} >
-        <div className='flex flex-wrap w-full gap-4 justify-center mt-8'>
-          {data
-            ?.sort((a) => a.name === 'Welcome' ? -1 : 1)
-            .map(flow => (
-              <FlowCard key={flow.id} flow={flow} selectFlow={setFlow} />
-            ))}
+        <div className='m-4'>
+          <div className='grid w-full grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3'>
+            {data
+              ?.sort((a) => a.name === 'Welcome' ? -1 : 1)
+              .map(flow => (
+                <FlowCard key={flow.id} flow={flow} selectFlow={setFlow} />
+              ))}
+          </div>
         </div>
         <EditFlowModal flow={flow} refetch={refetch} setOpen={setIsEditFlowModalOpen} />
       </Dialog.Root>

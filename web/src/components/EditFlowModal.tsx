@@ -8,6 +8,7 @@ import TextArea from './Form/TextArea';
 import { useGetButtons } from '../hooks/useGetButtons';
 import { Flow } from '../hooks/useGetFlows';
 import { api } from '../contexts/AuthContext';
+import { XCircle } from 'phosphor-react';
 
 interface EditFlowModalProps {
   flow: Flow
@@ -60,15 +61,25 @@ export function EditFlowModal({ flow, refetch, setOpen }: EditFlowModalProps) {
     <Dialog.Portal>
       <Dialog.Overlay className='fixed inset-0 bg-black/60' />
 
-      <Dialog.Content onCloseAutoFocus={e => e.preventDefault()} className='fixed bg-[#2A2634] py-8 px-10 text-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-lg w-[480px] shadow-lg shadow-black/25'>
+      <Dialog.Content onCloseAutoFocus={e => {
+        e.preventDefault()
+        setButtons(flow?.buttons?.map(button => button.id) || [])
+      }} className='fixed bg-[#2A2634] py-8 px-10 text-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-lg w-[90%] sm:w-[480px] shadow-lg shadow-black/25'>
         <Dialog.Title className='text-3xl font-black'>
           Edite sua mensagem
         </Dialog.Title>
 
+        <Dialog.Close
+          type='button'
+          className='fixed text-white rounded-lg top-4 right-4 p-2 hover:text-violet-500'
+        >
+          <XCircle size={32} weight='bold' />
+        </Dialog.Close>
+
         <form onSubmit={handleEditFlow} className='mt-8 flex flex-col gap-4'>
           <div className='flex flex-col gap-2'>
             <label htmlFor="name">Título</label>
-            <Input name='name' id='name' placeholder='Título da mensagem' disabled={flow.name === 'Welcome'} defaultValue={flow.name} />
+            <Input name='name' id='name' placeholder='Título da mensagem' disabled={flow.name === 'Welcome'} defaultValue={flow.name?.replace('Welcome', 'Bem vindo')} />
             <p id="floating_helper_text" className="text-xs text-gray-500 dark:text-gray-400">O título será usado para criar o botão que leva para essa mensagem.</p>
           </div>
 
@@ -90,7 +101,7 @@ export function EditFlowModal({ flow, refetch, setOpen }: EditFlowModalProps) {
                     setButtons(value)
                 }}
               >
-                {data?.map((button) => (
+                {data?.filter(button => button.name !== flow.name).map((button) => (
                   <ToggleGroup.Item
                     key={button.id}
                     value={button.id}
@@ -103,30 +114,22 @@ export function EditFlowModal({ flow, refetch, setOpen }: EditFlowModalProps) {
             </div>
           </div>
 
-          <footer className='mt-4 flex justify-between'>
-            <Dialog.Close
-              type='button'
-              className='bg-zinc-500 px-5 h-12 rounded-md font-semibold hover:bg-zinc-600'
-            >
-              Cancelar
-            </Dialog.Close>
-
-            <div className='flex gap-4'>
+          <footer className='mt-4 flex-wrap sm:flex justify-between'>
+            {flow.name === 'Welcome' ? null :
               <button
                 type='button'
-                className='bg-red-500 px-5 h-12 rounded-md font-semibold hover:bg-red-600'
+                className='bg-red-500 px-5 h-12 rounded-md font-semibold hover:bg-red-600 w-full sm:w-[35%]'
                 onClick={() => setDeleteDialog(true)}
               >
                 Deletar
               </button>
-
-              <button
-                type='submit'
-                className='bg-violet-500 px-5 h-12 rounded-md font-semibold hover:bg-violet-600'
-              >
-                Editar
-              </button>
-            </div>
+            }
+            <button
+              type='submit'
+              className='bg-violet-500 px-5 h-12 rounded-md font-semibold hover:bg-violet-600 w-full sm:w-[35%] mt-4 sm:mt-0'
+            >
+              Editar
+            </button>
           </footer>
 
         </form>
@@ -134,17 +137,17 @@ export function EditFlowModal({ flow, refetch, setOpen }: EditFlowModalProps) {
 
       <Dialog.Root open={deleteDialog}>
         <Dialog.Overlay className='fixed inset-0 bg-black/60' />
-        <Dialog.Content onCloseAutoFocus={e => e.preventDefault()} className='fixed bg-[#2A2634] py-8 px-10 text-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-lg w-[400px] shadow-lg shadow-black/25'>
+        <Dialog.Content onCloseAutoFocus={e => e.preventDefault()} className='fixed bg-[#2A2634] py-8 px-10 text-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-lg w-[70%] sm:w-[400px] shadow-lg shadow-black/25'>
           <Dialog.Title className='text-3xl font-black'>
             Deletar fluxo
           </Dialog.Title>
 
           <p className='mt-8 text-lg'>Tem certeza que deseja deletar esse fluxo?</p>
 
-          <footer className='mt-4 flex justify-between'>
+          <footer className='mt-4 flex-wrap justify-between sm:flex'>
             <button
               type='button'
-              className='bg-zinc-500 px-5 h-12 rounded-md font-semibold hover:bg-zinc-600'
+              className='bg-zinc-500 px-5 h-12 rounded-md font-semibold hover:bg-zinc-600 w-full sm:w-auto'
               onClick={() => setDeleteDialog(false)}
             >
               Cancelar
@@ -152,7 +155,7 @@ export function EditFlowModal({ flow, refetch, setOpen }: EditFlowModalProps) {
 
             <button
               type='button'
-              className='bg-red-500 px-5 h-12 rounded-md font-semibold hover:bg-red-600'
+              className='bg-red-500 px-5 h-12 rounded-md font-semibold hover:bg-red-600 w-full sm:w-auto mt-4 sm:mt-0'
               onClick={handleDeleteFlow}
             >
               Deletar

@@ -6,6 +6,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { toast } from 'react-toastify';
 import { io, Socket } from 'socket.io-client';
 import { AuthContext } from './AuthContext';
 
@@ -59,7 +60,12 @@ export function ChatbotProvider({
     });
 
     socket.current.on('chatbot:qr', (qr: string) => {
-      setQrCode(qr);
+      if (qr === 'expired') {
+        setQrCode('')
+        setIsBotConnected(false)
+        setIsBotConnecting(false)
+      }
+      else setQrCode(qr);
     });
 
     socket.current.on('chatbot:ready', () => {
@@ -69,9 +75,9 @@ export function ChatbotProvider({
     });
 
     socket.current.on('chatbot:disconnected', () => {
-      console.log('🚀 ~ disconnected');
       setQrCode('');
       setIsBotConnected(false);
+      setIsBotConnecting(false);
     });
   }, []);
 
@@ -84,7 +90,10 @@ export function ChatbotProvider({
   }
 
   const startBot = () => {
-    if (!user) return
+    if (!user) {
+      toast.info('Você precisa estar logado para usar o bot, tente recarregar a página');
+      return
+    }
 
     socket.current?.emit('chatbot:start', {
       id: user.id,
