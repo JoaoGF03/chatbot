@@ -35,7 +35,7 @@ export function ChatbotProvider({
   const { 'dta.token': token } = parseCookies();
 
   useEffect(() => {
-    socket.current = io('http://localhost:3333', {
+    socket.current = io(import.meta.env.VITE_BASE_URL, {
       autoConnect: false,
     });
 

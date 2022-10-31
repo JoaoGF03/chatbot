@@ -33,7 +33,7 @@ type AuthProviderProps = {
 export const AuthContext = createContext({} as AuthContextData);
 
 export let api = axios.create({
-  baseURL: 'http://localhost:3333',
+  baseURL: import.meta.env.VITE_BASE_URL,
   headers: {
     Authorization: `Bearer ${parseCookies()['dta.token']}`,
   },
@@ -88,7 +88,7 @@ export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
       setLoggedUser(user);
 
       api = axios.create({
-        baseURL: 'http://localhost:3333',
+        baseURL: import.meta.env.VITE_BASE_URL,
         headers: {
           Authorization: `Bearer ${token}`,
         },
