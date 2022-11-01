@@ -19,8 +19,16 @@ export default function Login() {
   }
 
   return (
-    <div className='flex flex-col items-center justify-center h-screen'>
-      <div className='fixed bg-[#2A2634] py-8 px-10 text-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-lg w-[480px] shadow-lg shadow-black/25'>
+    <div className='flex flex-col items-center mx-4 mt-12 gap-8 overflow-hidden'>
+      <div className='text-white max-w-lg'>
+        <h1 className='text-4xl font-bold'>
+          Bem vindo ao <span className='text-4xl font-black text-transparent bg-nlw-gradient bg-clip-text'>
+            Flow
+          </span>
+        </h1>
+        Aqui você pode criar e gerenciar suas mensagens de forma simples e rápida.
+      </div>
+      <div className='bg-[#2A2634] w-full justify-center max-w-lg py-8 px-10 text-white rounded-lg shadow-lg shadow-black/25'>
         <div className='text-3xl font-black'>
           Login
         </div>

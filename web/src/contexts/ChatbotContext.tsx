@@ -32,7 +32,7 @@ export function ChatbotProvider({
   const [isBotConnecting, setIsBotConnecting] = useState(false);
   const [qrCode, setQrCode] = useState<string>('');
   const { user } = useContext(AuthContext)
-  const { 'dta.token': token } = parseCookies();
+  const { 'flow.token': token } = parseCookies();
 
   useEffect(() => {
     socket.current = io(import.meta.env.VITE_BASE_URL, {

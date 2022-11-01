@@ -12,6 +12,8 @@ io.on('connection', socket => {
   socket.on('chatbot:connected', async (token, callback) => {
     const { sub: userId } = verify(token, JWT_SECRET);
 
+    if (typeof userId === 'string') socket.join(userId);
+
     const hasClient = Array.from(clients).find(
       client => client.userId === userId,
     );

@@ -35,7 +35,7 @@ export const AuthContext = createContext({} as AuthContextData);
 export let api = axios.create({
   baseURL: import.meta.env.VITE_BASE_URL,
   headers: {
-    Authorization: `Bearer ${parseCookies()['dta.token']}`,
+    Authorization: `Bearer ${parseCookies()['flow.token']}`,
   },
 });
 
@@ -53,7 +53,7 @@ export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
 
   useEffect(() => {
     const exec = async () => {
-      const { 'dta.token': token } = parseCookies();
+      const { 'flow.token': token } = parseCookies();
 
       if (token) {
         await refetch()
@@ -67,7 +67,7 @@ export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
   const signOut = useCallback(async () => {
     await queryClient.invalidateQueries(['flows', 'buttons', 'user']);
 
-    destroyCookie(undefined, 'dta.token');
+    destroyCookie(undefined, 'flow.token');
 
     navigate('/');
   }, []);
@@ -80,7 +80,7 @@ export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
 
       const { user, token } = response.data;
 
-      setCookie(undefined, 'dta.token', token, {
+      setCookie(undefined, 'flow.token', token, {
         maxAge: 60 * 60 * 24 * 30, // 30 days
         path: '/',
       });

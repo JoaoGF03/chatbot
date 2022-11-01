@@ -21,7 +21,7 @@ app.use(
   swaggerUi.serve,
   swaggerUi.setup(swaggerFile, {
     customCss,
-    customSiteTitle: 'DTA Chatbot API',
+    customSiteTitle: 'Flow API',
     swaggerOptions: {
       docExpansion: 'none',
     },

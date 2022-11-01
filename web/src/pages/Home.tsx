@@ -1,6 +1,6 @@
 import * as Dialog from '@radix-ui/react-dialog'
 
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useState } from 'react'
 import QRCode from 'react-qr-code';
 import { ChatText, Pause, SpinnerGap, Robot } from 'phosphor-react';
 
@@ -53,19 +53,15 @@ export default function Home() {
 
           <Dialog.Root open={!!qrCode} >
             <Dialog.Overlay className='fixed inset-0 bg-black/60' />
-            <Dialog.Content className='fixed bg-[#2A2634] py-8 px-10 text-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-lg w-[384px] shadow-lg shadow-black/25'>
+            <Dialog.Content className='fixed bg-[#2A2634] py-8 px-10 text-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-lg w-[90%] sm:w-[384px] shadow-lg shadow-black/25'>
               <Dialog.Title className='text-2xl font-bold mb-4'>
                 QRCode
               </Dialog.Title>
               <div className='flex flex-col items-center gap-8'>
-                {qrCode
-                  ? <>
-                    <div className='border-4 rounded-md border-white'>
-                      <QRCode value={qrCode} size={256} />
-                    </div>
-                    <span className='text-sm text-gray-400'>Escaneie o QRCode com o WhatsApp Web</span>
-                  </>
-                  : <SpinnerGap className='animate-spin' size={24} />}
+                <div className='border-4 rounded-md border-white'>
+                  <QRCode value={qrCode} size={256} />
+                </div>
+                <span className='text-sm text-gray-400'>Escaneie o QRCode com o WhatsApp</span>
               </div>
             </Dialog.Content>
           </Dialog.Root>
@@ -77,7 +73,7 @@ export default function Home() {
       </Dialog.Root>
 
       <Dialog.Root open={isEditFlowModalOpen} onOpenChange={setIsEditFlowModalOpen} >
-        <div className='m-4'>
+        <div className='p-4 w-full'>
           <div className='grid w-full grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3'>
             {data
               ?.sort((a) => a.name === 'Welcome' ? -1 : 1)
