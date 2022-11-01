@@ -72,16 +72,21 @@ io.on('connection', socket => {
     const client = new Client({
       puppeteer: {
         headless: true,
-        args: ['--no-sandbox'],
+        args: ['--no-sandbox', '--disable-setuid-sandbox'],
       },
       authStrategy: new LocalAuth({
         clientId: userId,
       }),
     });
 
-    client.initialize().catch(async () => {
-      await client.destroy();
-      clients.delete(hasClient);
+    client.initialize().catch(async error => {
+      console.log(error);
+
+      await client.destroy().catch(() => {
+        io.to(userId).emit('chatbot:disconnected');
+      });
+
+      // clients.delete(hasClient);
       io.to(userId).emit('chatbot:disconnected');
     });
 
@@ -100,7 +105,6 @@ io.on('connection', socket => {
 
     client.on('ready', async () => {
       console.log('Client is ready!');
-      // checkInstance();
       io.to(userId).emit('chatbot:ready');
       clients.add({ userId, client });
     });

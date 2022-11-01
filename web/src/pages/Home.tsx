@@ -21,10 +21,6 @@ export default function Home() {
   const { user } = useContext(AuthContext)
   const { data, refetch } = useGetFlows()
 
-  useEffect(() => {
-    console.log('🚀 ~ file: Home.tsx ~ line 28 ~ useEffect ~ isBotConnected', isBotConnected)
-  }, [isBotConnected])
-
   return (
     <div className='max-w-[1344px] mx-auto flex flex-col items-center'>
       <Header />

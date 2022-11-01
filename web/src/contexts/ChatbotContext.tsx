@@ -45,9 +45,9 @@ export function ChatbotProvider({
           token,
           function (error: boolean, message: string) {
             if (error) {
-              console.log('🚀 error: ', message);
+              // console.log('🚀 error: ', message);
             } else {
-              console.log('🚀 message: ', message);
+              // console.log('🚀 message: ', message);
               if (message === 'Connected') {
                 setIsBotConnected(true);
               } else {
@@ -105,9 +105,9 @@ export function ChatbotProvider({
   const stopBot = () => {
     socket.current?.emit('chatbot:stop', token, function (error: boolean, message: string) {
       if (error) {
-        console.log('🚀 error: ', message);
+        // console.log('🚀 error: ', message);
       } else {
-        console.log('🚀 message: ', message);
+        // console.log('🚀 message: ', message);
         if (message === 'Disconnected') {
           setIsBotConnected(false);
         }
