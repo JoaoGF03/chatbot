@@ -61,6 +61,80 @@
         "security": []
       }
     },
+    "/auth/forgotPassword": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Forgot Password",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "johndoe@email.com"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "No Content"
+          },
+          "404": {
+            "description": "Account not found"
+          }
+        },
+        "security": []
+      }
+    },
+    "/auth/resetPassword": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Reset Password",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "token",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "password": {
+                    "type": "string",
+                    "example": "123456"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "404": {
+            "description": "Account not found"
+          }
+        },
+        "security": []
+      }
+    },
     "/users": {
       "post": {
         "tags": [
@@ -282,7 +356,7 @@
           }
         ]
       },
-      "delete":{
+      "delete": {
         "tags": [
           "Flow"
         ],

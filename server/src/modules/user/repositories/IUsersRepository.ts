@@ -9,4 +9,5 @@ export interface IUsersRepository {
   findByName(name: string): Promise<User | undefined>;
   findById(id: string): Promise<User>;
   pathAvatar(data: IUpdateAvatarDTO): Promise<User>;
+  updatePassword(id: string, password: string): Promise<void>;
 }

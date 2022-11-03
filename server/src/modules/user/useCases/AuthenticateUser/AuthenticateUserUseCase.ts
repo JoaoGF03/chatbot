@@ -1,7 +1,7 @@
 import { sign } from 'jsonwebtoken';
 import { inject, injectable } from 'tsyringe';
 
-import { IHashProvider } from '@shared/providers/HashProvider/IHashProvider';
+import { IHashProvider } from '@shared/container/providers/HashProvider/IHashProvider';
 
 import { AppError } from '@errors/AppError';
 import { JWT_SECRET } from '@utils/constants';

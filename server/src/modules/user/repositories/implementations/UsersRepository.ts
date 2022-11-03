@@ -83,4 +83,15 @@ export class UsersRepository implements IUsersRepository {
 
     return user;
   }
+
+  public async updatePassword(id: string, password: string): Promise<void> {
+    await this.ormRepository.update({
+      where: {
+        id,
+      },
+      data: {
+        password,
+      },
+    });
+  }
 }

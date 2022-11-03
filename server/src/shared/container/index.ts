@@ -4,4 +4,5 @@ import '@modules/flow/container';
 import '@modules/button/container';
 
 // Shared Providers
-import '@shared/providers/HashProvider';
+import '@shared/container/providers/HashProvider';
+import '@shared/container/providers/MailProvider';
