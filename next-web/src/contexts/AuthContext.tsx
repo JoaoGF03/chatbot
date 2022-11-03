@@ -47,6 +47,8 @@ export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
   const { data, refetch } = useGetMe();
   const queryClient = useQueryClient();
 
+  const PATHS = ['/Login', '/ForgotPassword', '/ResetPassword'];
+
   useEffect(() => {
     const exec = async () => {
       const { 'flow.token': token } = parseCookies();
@@ -57,7 +59,7 @@ export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
         await refetch();
         setLoggedUser(data);
       } else {
-        if (asPath !== '/Login') signOut();
+        if (!PATHS.includes(asPath.split('?')[0])) signOut();
       }
     };
     exec();

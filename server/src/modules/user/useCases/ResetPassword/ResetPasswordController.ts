@@ -6,6 +6,7 @@ import { ResetPasswordUseCase } from './ResetPasswordUseCase';
 export class ResetPasswordController {
   async handle(request: Request, response: Response): Promise<Response> {
     const { token } = request.query;
+
     const { password } = request.body;
 
     const resetPassword = container.resolve(ResetPasswordUseCase);

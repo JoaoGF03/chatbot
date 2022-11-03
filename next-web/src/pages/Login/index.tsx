@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import { FormEvent, useContext } from 'react';
 
 import { AuthContext } from '@contexts/AuthContext';
@@ -5,6 +6,7 @@ import { AuthContext } from '@contexts/AuthContext';
 import { Input } from '@components/Form/Input';
 
 export default function Login() {
+  const { push } = useRouter();
   const { signIn, isLoading } = useContext(AuthContext);
 
   async function handleSignIn(event: FormEvent) {
@@ -53,6 +55,7 @@ export default function Login() {
             <button
               type="button"
               className="text-gray-500 font-semibold hover:text-gray-200 underline"
+              onClick={() => push('/ForgotPassword')}
             >
               Esqueci minha senha
             </button>

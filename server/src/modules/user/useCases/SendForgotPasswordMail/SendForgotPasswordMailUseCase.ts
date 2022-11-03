@@ -39,6 +39,10 @@ export class SendForgotPasswordMailUseCase {
       subject: user.id,
       expiresIn: '3h',
     });
+    console.log(
+      '🚀 ~ file: SendForgotPasswordMailUseCase.ts ~ line 42 ~ SendForgotPasswordMailUseCase ~ execute ~ token',
+      token,
+    );
 
     const variables = {
       name: user.name,
