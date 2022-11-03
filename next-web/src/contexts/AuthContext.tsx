@@ -50,21 +50,20 @@ export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    setLoggedUser(data);
-  }, [data]);
-
-  useEffect(() => {
     const exec = async () => {
       const { 'flow.token': token } = parseCookies();
 
       if (token) {
         await refetch();
+        setLoggedUser(data);
+
+        if (asPath === '/Login') await push('/Home');
       } else {
         if (asPath !== '/Login') signOut();
       }
     };
     exec();
-  }, []);
+  }, [asPath]);
 
   const signOut = useCallback(async () => {
     destroyCookie(undefined, 'flow.token');
