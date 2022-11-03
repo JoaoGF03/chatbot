@@ -23,7 +23,6 @@ interface AuthContextData {
   signIn: (data: SignIn) => Promise<void>;
   signOut: () => void;
   isLoading: boolean;
-  isAuthenticated: boolean;
   user: User | undefined;
 }
 
@@ -43,7 +42,6 @@ export const AuthContext = createContext({} as AuthContextData);
 export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
   const [loggedUser, setLoggedUser] = useState<User>();
   const [isLoading, setIsLoading] = useState(false);
-  const isAuthenticated = !!loggedUser;
   const { push, asPath } = useRouter();
 
   const { data, refetch } = useGetMe();
@@ -54,16 +52,16 @@ export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
       const { 'flow.token': token } = parseCookies();
 
       if (token) {
+        if (asPath === '/Login') await push('/Home');
+
         await refetch();
         setLoggedUser(data);
-
-        if (asPath === '/Login') await push('/Home');
       } else {
         if (asPath !== '/Login') signOut();
       }
     };
     exec();
-  }, [asPath]);
+  }, [asPath, data]);
 
   const signOut = useCallback(async () => {
     destroyCookie(undefined, 'flow.token');
@@ -96,10 +94,9 @@ export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
         },
       });
 
-      setTimeout(() => {
-        setLoggedUser(user);
-        push('/Home');
-      }, 500);
+      setLoggedUser(user);
+
+      await push('/Home');
     } catch (error) {
       if (error instanceof AxiosError) {
         if (error.response?.status === 401) {
@@ -115,13 +112,12 @@ export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
 
   const authContextData: AuthContextData = useMemo(
     () => ({
-      isAuthenticated,
       signIn,
       signOut,
       user: loggedUser,
       isLoading,
     }),
-    [isAuthenticated, signIn, signOut, loggedUser, isLoading],
+    [signIn, signOut, loggedUser, isLoading],
   );
   return (
     <AuthContext.Provider value={authContextData}>

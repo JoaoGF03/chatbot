@@ -1,7 +1,7 @@
 import * as Dialog from '@radix-ui/react-dialog';
 import { ChatText, Pause, SpinnerGap, Robot } from 'phosphor-react';
-import { useContext, useEffect, useState } from 'react';
-import QRCode from 'react-qr-code';
+import { useContext, useState } from 'react';
+// import QRCode from 'react-qr-code';
 
 import { AuthContext } from '@contexts/AuthContext';
 import { ChatbotContext } from '@contexts/ChatbotContext';
@@ -20,10 +20,6 @@ export default function Home() {
     useContext(ChatbotContext);
   const { user } = useContext(AuthContext);
   const { data, refetch } = useGetFlows();
-
-  useEffect(() => {
-    refetch();
-  }, []);
 
   return (
     <>
@@ -70,17 +66,15 @@ export default function Home() {
 
           <Dialog.Root open={!!qrCode}>
             <Dialog.Overlay className="fixed inset-0 bg-black/60" />
-            <Dialog.Content className="fixed bg-[#2A2634] py-8 px-10 text-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-lg w-[90%] sm:w-[384px] shadow-lg shadow-black/25">
-              <Dialog.Title className="text-2xl font-bold mb-4">
-                QRCode
+            <Dialog.Content className="fixed flex flex-col gap-2 items-center bg-[#2A2634] py-8 px-10 text-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-lg w-[80%] sm:w-[384px] shadow-lg shadow-black/25">
+              <Dialog.Title className="text-base sm:text-2xl font-bold">
+                Escaneie o QR Code
               </Dialog.Title>
-              <div className="flex flex-col items-center gap-8">
-                <div className="border-4 rounded-md border-white">
-                  <QRCode value={qrCode} size={256} />
-                </div>
-                <span className="text-sm text-gray-400">
-                  Escaneie o QRCode com o WhatsApp
-                </span>
+
+              <img className="rounded-lg" src={qrCode} alt="QR Code" />
+
+              <div className="text-xs sm:text-base text-center text-gray-400 ">
+                Abra o WhatsApp no seu celular e escaneie o QR Code acima.
               </div>
             </Dialog.Content>
           </Dialog.Root>
@@ -91,25 +85,37 @@ export default function Home() {
         open={isCreateFlowModalOpen}
         onOpenChange={setIsCreateFlowModalOpen}
       >
-        <CreateFlowModal refetch={refetch} setOpen={setIsCreateFlowModalOpen} />
+        {isCreateFlowModalOpen && (
+          <CreateFlowModal
+            refetch={refetch}
+            setOpen={setIsCreateFlowModalOpen}
+          />
+        )}
       </Dialog.Root>
 
+      <div className="grid w-full  grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {data
+          ?.sort((a: { name: string }) => (a.name === 'Welcome' ? -1 : 1))
+          .map((flow: Flow) => (
+            <FlowCard
+              key={flow.id}
+              flow={flow}
+              selectFlow={setFlow}
+              setOpen={setIsEditFlowModalOpen}
+            />
+          ))}
+      </div>
       <Dialog.Root
         open={isEditFlowModalOpen}
         onOpenChange={setIsEditFlowModalOpen}
       >
-        <div className="grid w-full  grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {data
-            ?.sort((a: { name: string }) => (a.name === 'Welcome' ? -1 : 1))
-            .map((flow: Flow) => (
-              <FlowCard key={flow.id} flow={flow} selectFlow={setFlow} />
-            ))}
-        </div>
-        <EditFlowModal
-          flow={flow}
-          refetch={refetch}
-          setOpen={setIsEditFlowModalOpen}
-        />
+        {isEditFlowModalOpen && (
+          <EditFlowModal
+            flow={flow}
+            refetch={refetch}
+            setOpen={setIsEditFlowModalOpen}
+          />
+        )}
       </Dialog.Root>
     </>
   );

@@ -1,4 +1,5 @@
 import { parseCookies } from 'nookies';
+import QRCode from 'qrcode';
 import React, {
   createContext,
   useContext,
@@ -60,7 +61,9 @@ export function ChatbotProvider({ children }: { children: React.ReactNode }) {
         setQrCode('');
         setIsBotConnected(false);
         setIsBotConnecting(false);
-      } else setQrCode(qr);
+      } else {
+        QRCode.toDataURL(qr, { type: 'image/png' }).then(setQrCode);
+      }
     });
 
     socket.current.on('chatbot:ready', () => {
@@ -100,20 +103,7 @@ export function ChatbotProvider({ children }: { children: React.ReactNode }) {
   };
 
   const stopBot = () => {
-    socket.current?.emit(
-      'chatbot:stop',
-      token,
-      function (error: boolean, message: string) {
-        if (error) {
-          // console.log('🚀 error: ', message);
-        } else {
-          // console.log('🚀 message: ', message);
-          if (message === 'Disconnected') {
-            setIsBotConnected(false);
-          }
-        }
-      },
-    );
+    socket.current?.emit('chatbot:stop', token);
   };
 
   return (

@@ -17,9 +17,10 @@ interface EditFlowModalProps {
   refetch: () => void;
   setOpen: (value: boolean) => void;
 }
+
 export function EditFlowModal({ flow, refetch, setOpen }: EditFlowModalProps) {
-  const [render, setRender] = useState(false);
   const [buttons, setButtons] = useState<string[]>([]);
+  const [render, setRender] = useState(false);
   const [deleteDialog, setDeleteDialog] = useState(false);
   const { data } = useGetButtons();
 
@@ -46,8 +47,8 @@ export function EditFlowModal({ flow, refetch, setOpen }: EditFlowModalProps) {
         buttons: buttons.map(button => ({ id: button })),
       });
 
-      refetch();
       setOpen(false);
+      refetch();
     } catch (error) {
       toast.error('Erro ao editar fluxo');
     }
@@ -57,8 +58,9 @@ export function EditFlowModal({ flow, refetch, setOpen }: EditFlowModalProps) {
     try {
       await api.delete(`/flows/${flow.id}`);
 
-      refetch();
       setOpen(false);
+      setDeleteDialog(false);
+      refetch();
     } catch (error) {
       toast.error('Erro ao deletar fluxo');
     }

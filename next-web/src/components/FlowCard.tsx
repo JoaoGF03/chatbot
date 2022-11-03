@@ -1,4 +1,3 @@
-import * as Dialog from '@radix-ui/react-dialog';
 import { Pen } from 'phosphor-react';
 
 import { Flow } from '@hooks/useGetFlows';
@@ -6,9 +5,10 @@ import { Flow } from '@hooks/useGetFlows';
 interface FlowCardProps {
   flow: Flow;
   selectFlow: (flow: Flow) => void;
+  setOpen: (value: boolean) => void;
 }
 
-export function FlowCard({ flow, selectFlow }: FlowCardProps) {
+export function FlowCard({ flow, selectFlow, setOpen }: FlowCardProps) {
   return (
     <div
       key={flow.id}
@@ -18,12 +18,15 @@ export function FlowCard({ flow, selectFlow }: FlowCardProps) {
         <strong className="text-xl text-white font-black block">
           {flow.name.replace('Welcome', 'Bem vindo')}
         </strong>
-        <Dialog.Trigger
-          className="text-white hover:text-violet-500"
-          onClick={() => selectFlow(flow)}
+        <div
+          className="text-white hover:text-violet-500 cursor-pointer"
+          onClick={() => {
+            selectFlow(flow);
+            setOpen(true);
+          }}
         >
           <Pen size={24} weight="bold" />
-        </Dialog.Trigger>
+        </div>
       </div>
 
       <strong className="text-gray-200 font-black block my-4 break-words overflow-auto h-auto whitespace-pre-line">

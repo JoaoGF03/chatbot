@@ -12,7 +12,10 @@ io.on('connection', socket => {
   socket.on('chatbot:connected', async (token, callback) => {
     const { sub: userId } = verify(token, JWT_SECRET);
 
-    if (typeof userId === 'string') socket.join(userId);
+    if (userId) {
+      if (typeof userId === 'string') socket.join(userId);
+      else socket.join(userId.toString());
+    }
 
     const hasClient = Array.from(clients).find(
       client => client.userId === userId,
@@ -29,7 +32,7 @@ io.on('connection', socket => {
     }
   });
 
-  socket.on('chatbot:stop', async (token, callback) => {
+  socket.on('chatbot:stop', async token => {
     const { sub: userId } = verify(token, JWT_SECRET);
 
     const hasClient = Array.from(clients).find(
@@ -40,11 +43,10 @@ io.on('connection', socket => {
       await hasClient.client.destroy();
 
       clients.delete(hasClient);
-
-      callback(false, 'Disconnected');
-    } else {
-      callback(true, 'No client');
     }
+
+    if (typeof userId === 'string') io.to(userId).emit('chatbot:disconnected');
+    else io.to(userId.toString()).emit('chatbot:disconnected');
   });
 
   socket.on('chatbot:start', async args => {
