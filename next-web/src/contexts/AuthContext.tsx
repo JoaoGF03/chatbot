@@ -47,7 +47,7 @@ export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
   const { data, refetch } = useGetMe();
   const queryClient = useQueryClient();
 
-  const PATHS = ['/Login', '/ForgotPassword', '/ResetPassword'];
+  const PATHS = ['/', '/Login', '/ForgotPassword', '/ResetPassword'];
 
   useEffect(() => {
     const exec = async () => {

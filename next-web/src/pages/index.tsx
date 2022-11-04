@@ -5,7 +5,7 @@ export default function Index() {
   const { push } = useRouter();
 
   useEffect(() => {
-    push('/Login');
+    push('/Home');
   });
 
   return (
@@ -14,6 +14,9 @@ export default function Index() {
         <h1 className="text-4xl md:text-5xl font-black text-transparent bg-nlw-gradient bg-clip-text">
           Flow
         </h1>
+        <p className="text-2xl md:text-3xl font-light text-gray-500">
+          Landing Page está em construção
+        </p>
       </div>
     </>
   );

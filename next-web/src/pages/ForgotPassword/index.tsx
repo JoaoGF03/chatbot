@@ -35,8 +35,10 @@ export default function ForgotPassword() {
   return (
     <div className="flex flex-col items-center mx-4 mt-12 gap-8 overflow-hidden">
       <div className="bg-[#2A2634] w-full justify-center max-w-lg py-8 px-10 text-white rounded-lg shadow-lg shadow-black/25">
-        <div className="text-3xl font-black">Esqueci minha senha</div>
-        <div className="text-base mt-2">
+        <div className="text-xl sm:text-3xl font-black">
+          Esqueci minha senha
+        </div>
+        <div className="text-sm sm:text-base mt-2">
           Será enviado um e-mail para você com um link para criar uma nova
           senha.
         </div>

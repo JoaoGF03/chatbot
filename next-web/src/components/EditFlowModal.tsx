@@ -165,7 +165,9 @@ export function EditFlowModal({ flow, refetch, setOpen }: EditFlowModalProps) {
           </div>
 
           <footer className="flex-wrap sm:flex justify-between">
-            {flow.name === 'Welcome' ? null : (
+            {flow.name === 'Welcome' ? (
+              <span />
+            ) : (
               <button
                 type="button"
                 className="bg-red-500 h-8 sm:px-5 sm:h-12 rounded-md font-semibold hover:bg-red-600 w-full sm:w-[35%] sm:mt-0"
@@ -184,7 +186,7 @@ export function EditFlowModal({ flow, refetch, setOpen }: EditFlowModalProps) {
         </form>
       </Dialog.Content>
 
-      <Dialog.Root open={deleteDialog}>
+      <Dialog.Root open={deleteDialog} onOpenChange={setDeleteDialog}>
         <Dialog.Overlay className="fixed inset-0 bg-black/60" />
         <Dialog.Content
           onCloseAutoFocus={e => e.preventDefault()}
