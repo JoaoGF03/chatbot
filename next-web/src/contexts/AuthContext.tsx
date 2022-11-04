@@ -54,10 +54,10 @@ export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
       const { 'flow.token': token } = parseCookies();
 
       if (token) {
-        if (asPath === '/Login') await push('/Home');
-
         await refetch();
         setLoggedUser(data);
+
+        if (asPath === '/Login') await push('/Home');
       } else {
         if (!PATHS.includes(asPath.split('?')[0])) signOut();
       }
