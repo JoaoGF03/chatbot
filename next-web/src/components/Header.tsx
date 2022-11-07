@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { SignIn, SignOut } from 'phosphor-react';
 import { useContext } from 'react';
 
@@ -6,6 +7,7 @@ import { AuthContext } from '@contexts/AuthContext';
 
 export function Header() {
   const { signOut, user } = useContext(AuthContext);
+  const { asPath } = useRouter();
 
   return (
     <header className="flex justify-between w-full">
@@ -26,13 +28,15 @@ export function Header() {
             <SignOut size={32} weight="bold" />
           </button>
         ) : (
-          <Link
-            href="/Login"
-            className="flex gap-2 items-center text-2xl font-bold"
-          >
-            Entrar
-            <SignIn size={32} weight="bold" />
-          </Link>
+          asPath !== '/Login' && (
+            <Link
+              href="/Login"
+              className="flex gap-2 items-center text-2xl font-bold hover:text-violet-500"
+            >
+              Entrar
+              <SignIn size={32} weight="bold" />
+            </Link>
+          )
         )}
       </div>
     </header>

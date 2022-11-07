@@ -39,10 +39,6 @@ export async function ensureAuthenticated(
 
     return next();
   } catch (err) {
-    if (err instanceof AppError) {
-      throw new AppError('User not found', 404);
-    }
-
     throw new AppError('Invalid JWT token', 401);
   }
 }

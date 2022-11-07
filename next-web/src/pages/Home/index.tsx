@@ -1,7 +1,6 @@
 import * as Dialog from '@radix-ui/react-dialog';
 import { ChatText, Pause, SpinnerGap, Robot } from 'phosphor-react';
 import { useContext, useState } from 'react';
-// import QRCode from 'react-qr-code';
 
 import { AuthContext } from '@contexts/AuthContext';
 import { ChatbotContext } from '@contexts/ChatbotContext';
@@ -14,8 +13,7 @@ import { FlowCard } from '@components/FlowCard';
 
 export default function Home() {
   const [isCreateFlowModalOpen, setIsCreateFlowModalOpen] = useState(false);
-  const [isEditFlowModalOpen, setIsEditFlowModalOpen] = useState(false);
-  const [flow, setFlow] = useState<Flow>({} as Flow);
+  const [flow, setFlow] = useState<Flow | undefined>(undefined);
   const { stopBot, startBot, qrCode, isBotConnected, isBotConnecting } =
     useContext(ChatbotContext);
   const { user } = useContext(AuthContext);
@@ -97,24 +95,17 @@ export default function Home() {
         {data
           ?.sort((a: { name: string }) => (a.name === 'Welcome' ? -1 : 1))
           .map((flow: Flow) => (
-            <FlowCard
-              key={flow.id}
-              flow={flow}
-              selectFlow={setFlow}
-              setOpen={setIsEditFlowModalOpen}
-            />
+            <FlowCard key={flow.id} flow={flow} selectFlow={setFlow} />
           ))}
       </div>
       <Dialog.Root
-        open={isEditFlowModalOpen}
-        onOpenChange={setIsEditFlowModalOpen}
+        open={!!flow}
+        onOpenChange={() => {
+          setFlow(undefined);
+        }}
       >
-        {isEditFlowModalOpen && (
-          <EditFlowModal
-            flow={flow}
-            refetch={refetch}
-            setOpen={setIsEditFlowModalOpen}
-          />
+        {flow && (
+          <EditFlowModal flow={flow} setFlow={setFlow} refetch={refetch} />
         )}
       </Dialog.Root>
     </>

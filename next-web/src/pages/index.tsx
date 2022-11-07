@@ -5,7 +5,7 @@ export default function Index() {
   const { push } = useRouter();
 
   useEffect(() => {
-    push('/Home');
+    push('/Login');
   });
 
   return (

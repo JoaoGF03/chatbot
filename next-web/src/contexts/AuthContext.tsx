@@ -12,7 +12,13 @@ import {
 import { useQueryClient } from 'react-query';
 import { toast } from 'react-toastify';
 
-import { useGetMe, User } from '@hooks/useGetMe';
+type User = {
+  id: string;
+  name: string;
+  email: string;
+  password: string;
+  admin: boolean;
+};
 
 type SignIn = {
   email: string;
@@ -40,30 +46,37 @@ export let api = axios.create({
 export const AuthContext = createContext({} as AuthContextData);
 
 export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
-  const [loggedUser, setLoggedUser] = useState<User>();
+  const [user, setUser] = useState<User>();
   const [isLoading, setIsLoading] = useState(false);
   const { push, asPath } = useRouter();
 
-  const { data, refetch } = useGetMe();
   const queryClient = useQueryClient();
 
-  const PATHS = ['/', '/Login', '/ForgotPassword', '/ResetPassword'];
-
   useEffect(() => {
-    const exec = async () => {
-      const { 'flow.token': token } = parseCookies();
+    const cancelToken = axios.CancelToken.source();
 
-      if (token) {
-        await refetch();
-        setLoggedUser(data);
+    const token = parseCookies()['flow.token'];
 
-        if (asPath === '/Login') await push('/Home');
-      } else {
-        if (!PATHS.includes(asPath.split('?')[0])) signOut();
-      }
+    if (token)
+      api
+        .get<User>('/users/me', {
+          cancelToken: cancelToken.token,
+        })
+        .then(({ data }) => {
+          setUser(data);
+          push('/Home');
+        })
+        .catch(err => {
+          if (err.response?.status === 401) {
+            toast.error('Sessão expirada, faça login novamente');
+            signOut();
+          }
+        });
+
+    return () => {
+      cancelToken.cancel();
     };
-    exec();
-  }, [asPath, data]);
+  }, [asPath]);
 
   const signOut = useCallback(async () => {
     destroyCookie(undefined, 'flow.token');
@@ -73,7 +86,7 @@ export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
 
     await push('/Login');
 
-    setLoggedUser(undefined);
+    setUser(undefined);
   }, []);
 
   const signIn = useCallback(async ({ email, password }: SignIn) => {
@@ -96,7 +109,7 @@ export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
         },
       });
 
-      setLoggedUser(user);
+      setUser(user);
 
       await push('/Home');
     } catch (error) {
@@ -116,10 +129,10 @@ export function AuthProvider({ children }: AuthProviderProps): JSX.Element {
     () => ({
       signIn,
       signOut,
-      user: loggedUser,
+      user,
       isLoading,
     }),
-    [signIn, signOut, loggedUser, isLoading],
+    [signIn, signOut, user, isLoading],
   );
   return (
     <AuthContext.Provider value={authContextData}>

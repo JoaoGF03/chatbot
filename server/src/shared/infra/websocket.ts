@@ -10,25 +10,29 @@ const clients = new Set() as Set<{ userId: string; client: Client }>;
 
 io.on('connection', socket => {
   socket.on('chatbot:connected', async (token, callback) => {
-    const { sub: userId } = verify(token, JWT_SECRET);
+    try {
+      const { sub: userId } = verify(token, JWT_SECRET);
 
-    if (userId) {
-      if (typeof userId === 'string') socket.join(userId);
-      else socket.join(userId.toString());
-    }
-
-    const hasClient = Array.from(clients).find(
-      client => client.userId === userId,
-    );
-
-    if (hasClient) {
-      const status = await hasClient.client.getState();
-
-      if (status === 'CONNECTED') {
-        callback(false, 'Connected');
+      if (userId) {
+        if (typeof userId === 'string') socket.join(userId);
+        else socket.join(userId.toString());
       }
-    } else {
-      callback(true, 'No client');
+
+      const hasClient = Array.from(clients).find(
+        client => client.userId === userId,
+      );
+
+      if (hasClient) {
+        const status = await hasClient.client.getState();
+
+        if (status === 'CONNECTED') {
+          callback(false, 'Connected');
+        }
+      } else {
+        callback(true, 'No client');
+      }
+    } catch (err) {
+      callback(true, 'Invalid token');
     }
   });
 

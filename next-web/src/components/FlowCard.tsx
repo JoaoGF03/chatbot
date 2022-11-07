@@ -5,10 +5,9 @@ import { Flow } from '@hooks/useGetFlows';
 interface FlowCardProps {
   flow: Flow;
   selectFlow: (flow: Flow) => void;
-  setOpen: (value: boolean) => void;
 }
 
-export function FlowCard({ flow, selectFlow, setOpen }: FlowCardProps) {
+export function FlowCard({ flow, selectFlow }: FlowCardProps) {
   return (
     <div
       key={flow.id}
@@ -22,7 +21,6 @@ export function FlowCard({ flow, selectFlow, setOpen }: FlowCardProps) {
           className="text-white hover:text-violet-500 cursor-pointer"
           onClick={() => {
             selectFlow(flow);
-            setOpen(true);
           }}
         >
           <Pen size={24} weight="bold" />

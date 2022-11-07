@@ -2,6 +2,7 @@ import '../styles/globals.css';
 import 'react-toastify/dist/ReactToastify.css';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
+import { StrictMode } from 'react';
 import { QueryClientProvider } from 'react-query';
 import { ToastContainer } from 'react-toastify';
 
@@ -13,7 +14,7 @@ import { Header } from '@components/Header';
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <>
+    <StrictMode>
       <Head>
         <meta content="#07070f" name="theme-color" />
         <meta
@@ -83,6 +84,6 @@ export default function App({ Component, pageProps }: AppProps) {
           </ChatbotProvider>
         </AuthProvider>
       </QueryClientProvider>
-    </>
+    </StrictMode>
   );
 }

@@ -1,7 +1,7 @@
 import * as Dialog from '@radix-ui/react-dialog';
 import * as ToggleGroup from '@radix-ui/react-toggle-group';
 import { XCircle } from 'phosphor-react';
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useState } from 'react';
 import { toast } from 'react-toastify';
 
 import { api } from '@contexts/AuthContext';
@@ -15,23 +15,15 @@ import { TextArea } from '@components/Form/TextArea';
 interface EditFlowModalProps {
   flow: Flow;
   refetch: () => void;
-  setOpen: (value: boolean) => void;
+  setFlow: (flow: Flow | undefined) => void;
 }
 
-export function EditFlowModal({ flow, refetch, setOpen }: EditFlowModalProps) {
-  const [buttons, setButtons] = useState<string[]>([]);
-  const [render, setRender] = useState(false);
+export function EditFlowModal({ flow, refetch, setFlow }: EditFlowModalProps) {
+  const [buttons, setButtons] = useState<string[]>(
+    flow.buttons.map(button => button.id) || [],
+  );
   const [deleteDialog, setDeleteDialog] = useState(false);
   const { data } = useGetButtons();
-
-  useEffect(() => {
-    setButtons(flow?.buttons?.map(button => button.id) || []);
-
-    // setTimeout is used to prevent a bug where the buttons would be replaced by the new values, while the user was can see the old values
-    setTimeout(() => {
-      setRender(true);
-    }, 10);
-  }, [flow]);
 
   async function handleEditFlow(event: FormEvent) {
     event.preventDefault();
@@ -41,13 +33,13 @@ export function EditFlowModal({ flow, refetch, setOpen }: EditFlowModalProps) {
     );
 
     try {
-      await api.put(`/flows/${flow.id}`, {
+      await api.put(`/flows/${flow?.id}`, {
         name: formData.name,
         message: formData.message,
         buttons: buttons.map(button => ({ id: button })),
       });
 
-      setOpen(false);
+      setFlow(undefined);
       refetch();
     } catch (error) {
       toast.error('Erro ao editar fluxo');
@@ -56,9 +48,9 @@ export function EditFlowModal({ flow, refetch, setOpen }: EditFlowModalProps) {
 
   async function handleDeleteFlow() {
     try {
-      await api.delete(`/flows/${flow.id}`);
+      await api.delete(`/flows/${flow?.id}`);
 
-      setOpen(false);
+      setFlow(undefined);
       setDeleteDialog(false);
       refetch();
     } catch (error) {
@@ -66,14 +58,13 @@ export function EditFlowModal({ flow, refetch, setOpen }: EditFlowModalProps) {
     }
   }
 
-  return render ? (
+  return flow ? (
     <Dialog.Portal>
       <Dialog.Overlay className="fixed inset-0 bg-black/60" />
 
       <Dialog.Content
         onCloseAutoFocus={e => {
           e.preventDefault();
-          setRender(false);
           setButtons(flow?.buttons?.map(button => button.id) || []);
         }}
         className="fixed bg-[#2A2634] py-8 px-10 text-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-lg w-[90%] sm:w-[480px] shadow-lg shadow-black/25"
