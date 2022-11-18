@@ -1,0 +1,24 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.usersRouter = void 0;
+const express_1 = require("express");
+const multer_1 = __importDefault(require("multer"));
+const upload_1 = __importDefault(require("../../../config/upload"));
+const ensureAuthenticated_1 = require("../../../shared/middlewares/ensureAuthenticated");
+const CreateUserController_1 = require("../useCases/CreateUser/CreateUserController");
+const DisplayMeController_1 = require("../useCases/DisplayMe/DisplayMeController");
+const FindAllUsersController_1 = require("../useCases/FindAllUsers/FindAllUsersController");
+const UpdateUserAvatarController_1 = require("../useCases/UpdateUserAvatar/UpdateUserAvatarController");
+exports.usersRouter = (0, express_1.Router)();
+const uploadAvatar = (0, multer_1.default)(upload_1.default.upload('avatar'));
+const createUserController = new CreateUserController_1.CreateUserController();
+const updateUserAvatarController = new UpdateUserAvatarController_1.UpdateUserAvatarController();
+const findAllUsersController = new FindAllUsersController_1.FindAllUsersController();
+const displayMeController = new DisplayMeController_1.DisplayMeController();
+exports.usersRouter.patch('/avatar', ensureAuthenticated_1.ensureAuthenticated, uploadAvatar.single('avatar'), updateUserAvatarController.handle);
+exports.usersRouter.get('/', ensureAuthenticated_1.ensureAuthenticated, findAllUsersController.handle);
+exports.usersRouter.get('/me', ensureAuthenticated_1.ensureAuthenticated, displayMeController.handle);
+exports.usersRouter.post('/', createUserController.handle);

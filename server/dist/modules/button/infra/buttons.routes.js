@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.buttonsRouter = void 0;
+const express_1 = require("express");
+const ensureAuthenticated_1 = require("../../../shared/middlewares/ensureAuthenticated");
+const FindAllButtonsController_1 = require("../useCases/FindAllButtons/FindAllButtonsController");
+exports.buttonsRouter = (0, express_1.Router)();
+const findAllButtonsController = new FindAllButtonsController_1.FindAllButtonsController();
+exports.buttonsRouter.use(ensureAuthenticated_1.ensureAuthenticated);
+exports.buttonsRouter.get('/', findAllButtonsController.handle);
