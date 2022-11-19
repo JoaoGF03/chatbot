@@ -3,6 +3,7 @@ import 'express-async-errors';
 import '@shared/container';
 import cors from 'cors';
 import express, { Request, Response, NextFunction, json } from 'express';
+import basicAuth from 'express-basic-auth';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import swaggerUi from 'swagger-ui-express';
@@ -18,6 +19,13 @@ export const app = express();
 app.use(json());
 app.use(
   '/api-docs',
+  basicAuth({
+    users:
+      process.env.NODE_ENV === 'dev'
+        ? { admin: 'admin' }
+        : { admin: process.env.SWAGGER_PASSWORD },
+    challenge: true,
+  }),
   swaggerUi.serve,
   swaggerUi.setup(swaggerFile, {
     customCss,
